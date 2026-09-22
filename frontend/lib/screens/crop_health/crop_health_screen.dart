@@ -1,49 +1,66 @@
 import 'package:flutter/material.dart';
-import '../analysis/analysis_loading_screen.dart';
+
 import '../../services/api_service.dart';
+import '../recommendation/recommendation_screen.dart';
+
 
 class CropHealthScreen extends StatefulWidget {
-  
 
   const CropHealthScreen({super.key});
 
 
   @override
-  State<CropHealthScreen> createState()
-  => _CropHealthScreenState();
+  State<CropHealthScreen> createState() =>
+      _CropHealthScreenState();
 
 }
 
 
 
-class _CropHealthScreenState
+class _CropHealthScreenState 
 extends State<CropHealthScreen>{
-  final ApiService apiService = ApiService();
 
 
-final _formKey = GlobalKey<FormState>();
+final formKey = GlobalKey<FormState>();
 
 
 String selectedCrop = "Rice";
 
 
+bool loading = false;
+
+
+
 final crops = [
 
-  "Rice",
-  "Wheat",
-  "Maize",
-  "Tomato",
-  "Potato"
+"Rice",
+"Wheat",
+"Maize",
+"Tomato",
+"Potato"
 
 ];
 
 
 
-final locationController = TextEditingController();
+// Controllers
 
-final soilController = TextEditingController();
+final nController = TextEditingController();
 
-final areaController = TextEditingController();
+final pController = TextEditingController();
+
+final kController = TextEditingController();
+
+
+final temperatureController = TextEditingController();
+
+final humidityController = TextEditingController();
+
+final phController = TextEditingController();
+
+final rainfallController = TextEditingController();
+
+
 
 
 
@@ -55,7 +72,9 @@ return Scaffold(
 
 appBar: AppBar(
 
-title: const Text("Crop Analysis"),
+title: const Text(
+"Crop Analysis",
+),
 
 ),
 
@@ -66,17 +85,19 @@ body: Padding(
 padding: const EdgeInsets.all(20),
 
 
-
 child: Form(
 
-key: _formKey,
+key: formKey,
+
+
+child: SingleChildScrollView(
 
 
 child: Column(
 
-
 crossAxisAlignment:
 CrossAxisAlignment.start,
+
 
 
 children: [
@@ -106,7 +127,7 @@ const SizedBox(height:10),
 
 const Text(
 
-"Provide crop details for AI prediction",
+"Enter soil and environmental details for AI prediction",
 
 style: TextStyle(
 
@@ -119,6 +140,7 @@ color: Colors.grey,
 
 
 const SizedBox(height:25),
+
 
 
 
@@ -186,151 +208,76 @@ const SizedBox(height:20),
 
 
 
-TextFormField(
-
-controller:
-locationController,
-
-
-decoration: InputDecoration(
-
-labelText:"Farm Location",
-
-prefixIcon:
-const Icon(Icons.location_on),
-
-
-border:OutlineInputBorder(
-
-borderRadius:
-BorderRadius.circular(15),
-
+buildField(
+controller:nController,
+label:"Nitrogen (N)",
+icon:Icons.science,
 ),
-
-),
-
-
-
-validator:(value){
-
-
-if(value==null || value.isEmpty){
-
-return "Please enter farm location";
-
-}
-
-
-return null;
-
-},
-
-
-),
-
 
 
 const SizedBox(height:20),
 
 
-
-TextFormField(
-
-controller:
-soilController,
-
-
-decoration: InputDecoration(
-
-labelText:"Soil Type",
-
-prefixIcon:
-const Icon(Icons.landscape),
-
-
-border:OutlineInputBorder(
-
-borderRadius:
-BorderRadius.circular(15),
-
+buildField(
+controller:pController,
+label:"Phosphorus (P)",
+icon:Icons.science,
 ),
-
-),
-
-
-
-validator:(value){
-
-
-if(value==null || value.isEmpty){
-
-return "Please enter soil type";
-
-}
-
-
-return null;
-
-},
-
-
-),
-
 
 
 const SizedBox(height:20),
 
 
-
-TextFormField(
-
-controller:
-areaController,
-
-
-keyboardType:
-TextInputType.number,
-
-
-decoration: InputDecoration(
-
-labelText:"Farm Area (acres)",
-
-prefixIcon:
-const Icon(Icons.square_foot),
-
-
-border:OutlineInputBorder(
-
-borderRadius:
-BorderRadius.circular(15),
-
-),
-
+buildField(
+controller:kController,
+label:"Potassium (K)",
+icon:Icons.science,
 ),
 
 
-
-validator:(value){
-
-
-if(value==null || value.isEmpty){
-
-return "Please enter farm area";
-
-}
+const SizedBox(height:20),
 
 
-return null;
+buildField(
+controller:temperatureController,
+label:"Temperature",
+icon:Icons.thermostat,
+),
 
-},
+
+const SizedBox(height:20),
 
 
+buildField(
+controller:humidityController,
+label:"Humidity",
+icon:Icons.water_drop,
+),
+
+
+const SizedBox(height:20),
+
+
+buildField(
+controller:phController,
+label:"Soil pH",
+icon:Icons.landscape,
+),
+
+
+const SizedBox(height:20),
+
+
+buildField(
+controller:rainfallController,
+label:"Rainfall",
+icon:Icons.cloud,
 ),
 
 
 
-const Spacer(),
+const SizedBox(height:30),
+
 
 
 
@@ -342,45 +289,28 @@ width:double.infinity,
 child:ElevatedButton(
 
 
-onPressed:() async {
+onPressed: loading
+? null
+: analyzeCrop,
 
 
-if(_formKey.currentState!.validate()){
+child:
 
+loading
 
-await apiService.analyzeCrop();
+?
 
+const CircularProgressIndicator(
+color:Colors.white,
+)
 
+:
 
-Navigator.push(
-
-context,
-
-MaterialPageRoute(
-
-builder:(_)=>
-
-const AnalysisLoadingScreen(),
-
-),
-
-);
-
-
-}
-
-
-},
-
-
-
-child:const Text(
+const Text(
 
 "Analyze with AI 🤖",
 
-style:
-
-TextStyle(
+style:TextStyle(
 
 fontSize:18,
 
@@ -389,24 +319,214 @@ fontSize:18,
 ),
 
 
-
 ),
 
 
-)
+),
 
 
 
 ],
 
-),
 
 ),
 
+
 ),
+
+
+),
+
+
+),
+
 
 );
 
+
 }
+
+
+
+
+
+Widget buildField({
+
+required TextEditingController controller,
+
+required String label,
+
+required IconData icon,
+
+}){
+
+
+return TextFormField(
+
+
+controller:controller,
+
+
+keyboardType:
+TextInputType.number,
+
+
+validator:(value){
+
+
+if(value==null || value.isEmpty){
+
+return "Required field";
+
+}
+
+
+return null;
+
+
+},
+
+
+
+decoration:InputDecoration(
+
+
+labelText:label,
+
+
+prefixIcon:Icon(icon),
+
+
+
+border:OutlineInputBorder(
+
+borderRadius:
+BorderRadius.circular(15),
+
+),
+
+
+),
+
+
+
+);
+
+
+}
+
+
+
+
+
+
+Future<void> analyzeCrop() async{
+
+
+if(!formKey.currentState!.validate()){
+
+return;
+
+}
+
+
+
+setState((){
+
+loading=true;
+
+});
+
+
+
+try{
+
+
+// NEW API CALL
+
+final result = await ApiService.analyzeCrop();
+
+
+
+if(mounted){
+
+
+Navigator.push(
+
+context,
+
+
+MaterialPageRoute(
+
+
+builder:(_)=>RecommendationScreen(
+
+
+result:result,
+
+
+),
+
+
+),
+
+
+);
+
+
+}
+
+
+
+}
+
+catch(e){
+
+
+ScaffoldMessenger.of(context)
+.showSnackBar(
+
+
+SnackBar(
+
+content:Text(
+
+"Prediction failed: $e"
+
+),
+
+),
+
+
+);
+
+
+}
+
+
+
+finally{
+
+
+if(mounted){
+
+setState((){
+
+loading=false;
+
+});
+
+}
+
+
+}
+
+
+
+}
+
+
+
+
 
 }

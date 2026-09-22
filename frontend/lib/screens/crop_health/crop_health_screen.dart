@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../services/api_service.dart';
 import '../recommendation/recommendation_screen.dart';
-
+import '../analysis/analysis_loading_screen.dart';
 
 class CropHealthScreen extends StatefulWidget {
 
@@ -420,108 +420,48 @@ BorderRadius.circular(15),
 
 
 
-Future<void> analyzeCrop() async{
+Future<void> analyzeCrop() async {
 
+  if(!formKey.currentState!.validate()){
+    return;
+  }
 
-if(!formKey.currentState!.validate()){
 
-return;
+  Navigator.push(
+    context,
 
-}
+    MaterialPageRoute(
 
+      builder: (_) => AnalysisLoadingScreen(
 
+        crop: selectedCrop,
 
-setState((){
+        n: int.parse(nController.text),
 
-loading=true;
+        p: int.parse(pController.text),
 
-});
+        k: int.parse(kController.text),
 
+        temperature: double.parse(
+          temperatureController.text
+        ),
 
+        humidity: double.parse(
+          humidityController.text
+        ),
 
-try{
+        ph: double.parse(
+          phController.text
+        ),
 
+        rainfall: double.parse(
+          rainfallController.text
+        ),
 
-// NEW API CALL
+      ),
 
-final result = await ApiService.analyzeCrop();
-
-
-
-if(mounted){
-
-
-Navigator.push(
-
-context,
-
-
-MaterialPageRoute(
-
-
-builder:(_)=>RecommendationScreen(
-
-
-result:result,
-
-
-),
-
-
-),
-
-
-);
-
-
-}
-
-
-
-}
-
-catch(e){
-
-
-ScaffoldMessenger.of(context)
-.showSnackBar(
-
-
-SnackBar(
-
-content:Text(
-
-"Prediction failed: $e"
-
-),
-
-),
-
-
-);
-
-
-}
-
-
-
-finally{
-
-
-if(mounted){
-
-setState((){
-
-loading=false;
-
-});
-
-}
-
-
-}
-
-
+    ),
+  );
 
 }
 

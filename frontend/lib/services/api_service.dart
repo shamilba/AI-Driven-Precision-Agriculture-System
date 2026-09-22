@@ -1,79 +1,64 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-
 class ApiService {
+  static const String baseUrl = "http://localhost:5000";
 
-  static const String baseUrl =
-      "http://127.0.0.1:5000";
-
-
-  static Future<Map<String,dynamic>> analyzeCrop() async {
-
-
+  static Future<Map<String, dynamic>> analyzeCrop({
+    required String crop,
+    required int n,
+    required int p,
+    required int k,
+    required double temperature,
+    required double humidity,
+    required double ph,
+    required double rainfall,
+  }) async {
     final response = await http.post(
-
-      Uri.parse(
-        "$baseUrl/api/analyze",
-      ),
-
+      Uri.parse("$baseUrl/api/analyze"),
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-
-
       body: jsonEncode({
+        // Crop model inputs - ACTUAL USER VALUES
+        "N": n,
+        "P": p,
+        "K": k,
+        "temperature": temperature,
+        "humidity": humidity,
+        "ph": ph,
+        "rainfall": rainfall,
 
-        "N": 90,
-        "P": 42,
-        "K": 43,
-
-        "temperature": 20.8,
-        "humidity": 82.0,
-"Humidity": 82.0,
-        "ph": 6.5,
-        "rainfall": 202.9,
-
-
+        // Yield model inputs
+        // Some fields are not collected by the current UI,
+        // so temporary defaults are used for those fields.
         "State": "Karnataka",
-        "Crop": "Rice",
+        "Crop": crop,
         "Season": "Kharif",
-
         "Area": 5.2,
-        "Rainfall": 1200,
+        "Rainfall": rainfall,
         "Fertilizer": 120,
         "Pesticide": 4.5,
-        "Temperature": 27,
+        "Temperature": temperature,
 
-
+        // Fertilizer model inputs
+        "Humidity": humidity,
         "Moisture": 38,
         "Soil_Type": "Loamy",
-        "Crop_Type": "Rice",
-
-        "Nitrogen": 37,
-        "Phosphorous": 0,
-        "Potassium": 0,
-
+        "Crop_Type": crop,
+        "Nitrogen": n,
+        "Phosphorous": p,
+        "Potassium": k,
       }),
-
     );
 
-    print("Status: ${response.statusCode}");
-print("Body: ${response.body}");
-
-    if(response.statusCode == 200){
-
+    if (response.statusCode == 200) {
       return jsonDecode(response.body);
-
-    }
-    else{
-
-      throw Exception(
-  "Status Code: ${response.statusCode}\nResponse: ${response.body}"
-);
-
     }
 
+    throw Exception(
+      "Status Code: ${response.statusCode}\n"
+      "Response: ${response.body}",
+    );
   }
-
 }

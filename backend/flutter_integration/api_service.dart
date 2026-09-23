@@ -1,19 +1,25 @@
 // lib/services/api_service.dart
 //
-// Example service showing how your existing Flutter app (see main.dart /
-// SplashScreen) can call this Python backend. Drop this into lib/services/
-// and set `baseUrl` to wherever you deploy app.py.
+// Service for connecting the Flutter application
+// with the Python Flask backend.
 //
-// Add to pubspec.yaml:  http: ^1.2.2
+// Add to pubspec.yaml:
+// http: ^1.2.2
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Android emulator -> host machine: 10.0.2.2
-  // iOS simulator / desktop -> localhost
-  // Physical device -> your machine's LAN IP, e.g. http://192.168.1.20:5000
+
+  // Android emulator -> host machine
+  // Physical Android device -> replace with your computer's LAN IP
+  // Example: http://192.168.1.20:5000
   static const String baseUrl = "http://10.0.2.2:5000";
+
+
+  // ============================================================
+  // CROP RECOMMENDATION
+  // ============================================================
 
   static Future<Map<String, dynamic>> recommendCrop({
     required double n,
@@ -24,9 +30,14 @@ class ApiService {
     required double ph,
     required double rainfall,
   }) async {
+
     final response = await http.post(
       Uri.parse("$baseUrl/api/predict/crop"),
-      headers: {"Content-Type": "application/json"},
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
       body: jsonEncode({
         "N": n,
         "P": p,
@@ -37,11 +48,21 @@ class ApiService {
         "rainfall": rainfall,
       }),
     );
+
     if (response.statusCode == 200) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      return jsonDecode(response.body)
+          as Map<String, dynamic>;
     }
-    throw Exception("Crop prediction failed: ${response.body}");
+
+    throw Exception(
+      "Crop prediction failed: ${response.body}",
+    );
   }
+
+
+  // ============================================================
+  // YIELD PREDICTION
+  // ============================================================
 
   static Future<Map<String, dynamic>> predictYield({
     required String state,
@@ -53,9 +74,14 @@ class ApiService {
     required double pesticide,
     required double temperature,
   }) async {
+
     final response = await http.post(
       Uri.parse("$baseUrl/api/predict/yield"),
-      headers: {"Content-Type": "application/json"},
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
       body: jsonEncode({
         "State": state,
         "Crop": crop,
@@ -67,39 +93,102 @@ class ApiService {
         "Temperature": temperature,
       }),
     );
+
     if (response.statusCode == 200) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      return jsonDecode(response.body)
+          as Map<String, dynamic>;
     }
-    throw Exception("Yield prediction failed: ${response.body}");
+
+    throw Exception(
+      "Yield prediction failed: ${response.body}",
+    );
   }
 
+
+  // ============================================================
+  // FERTILIZER RECOMMENDATION
+  // ============================================================
+
   static Future<Map<String, dynamic>> recommendFertilizer({
+    required String soilType,
+    required double soilPh,
+    required double soilMoisture,
+    required double organicCarbon,
+    required double electricalConductivity,
+    required double nitrogenLevel,
+    required double phosphorusLevel,
+    required double potassiumLevel,
     required double temperature,
     required double humidity,
-    required double moisture,
-    required String soilType,
+    required double rainfall,
     required String cropType,
-    required double nitrogen,
-    required double phosphorous,
-    required double potassium,
+    required String cropGrowthStage,
+    required String season,
+    required String irrigationType,
+    required String previousCrop,
+    required String region,
+    required double fertilizerUsedLastSeason,
+    required double yieldLastSeason,
   }) async {
+
     final response = await http.post(
       Uri.parse("$baseUrl/api/predict/fertilizer"),
-      headers: {"Content-Type": "application/json"},
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
       body: jsonEncode({
-        "Temperature": temperature,
-        "Humidity": humidity,
-        "Moisture": moisture,
+
         "Soil_Type": soilType,
+
+        "Soil_pH": soilPh,
+
+        "Soil_Moisture": soilMoisture,
+
+        "Organic_Carbon": organicCarbon,
+
+        "Electrical_Conductivity": electricalConductivity,
+
+        "Nitrogen_Level": nitrogenLevel,
+
+        "Phosphorus_Level": phosphorusLevel,
+
+        "Potassium_Level": potassiumLevel,
+
+        "Temperature": temperature,
+
+        "Humidity": humidity,
+
+        "Rainfall": rainfall,
+
         "Crop_Type": cropType,
-        "Nitrogen": nitrogen,
-        "Phosphorous": phosphorous,
-        "Potassium": potassium,
+
+        "Crop_Growth_Stage": cropGrowthStage,
+
+        "Season": season,
+
+        "Irrigation_Type": irrigationType,
+
+        "Previous_Crop": previousCrop,
+
+        "Region": region,
+
+        "Fertilizer_Used_Last_Season":
+            fertilizerUsedLastSeason,
+
+        "Yield_Last_Season":
+            yieldLastSeason,
       }),
     );
+
     if (response.statusCode == 200) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      return jsonDecode(response.body)
+          as Map<String, dynamic>;
     }
-    throw Exception("Fertilizer prediction failed: ${response.body}");
+
+    throw Exception(
+      "Fertilizer prediction failed: ${response.body}",
+    );
   }
 }

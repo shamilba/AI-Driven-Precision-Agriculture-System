@@ -50,9 +50,17 @@ it with the actual public datasets:
    `State,Crop,Season,Area,Rainfall,Fertilizer,Pesticide,Temperature,Yield`
    (rename columns to match if your chosen CSV differs — see
    `models/train_yield_prediction.py`).
-3. **Fertilizer recommendation** — Kaggle: *"Fertilizer Prediction Dataset"*.
-   Save as `data/fertilizer_recommendation.csv` with columns:
-   `Temperature,Humidity,Moisture,Soil_Type,Crop_Type,Nitrogen,Phosphorous,Potassium,Fertilizer_Name`
+3. Fertilizer recommendation — Dataset: fertilizer_recommendation_new.csv.
+
+   This dataset contains 10,000 records and 19 input features covering
+   soil properties, nutrient levels, crop information, environmental
+   conditions, and previous agricultural information.
+
+   Target column:
+   Recommended_Fertilizer
+
+   The model predicts 7 fertilizer classes:
+   Compost, DAP, MOP, NPK, SSP, Urea, Zinc Sulphate.
 
 As soon as a matching CSV exists at those paths, `utils/data_loader.py`
 automatically uses it instead of the synthetic data — no other code changes

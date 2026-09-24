@@ -122,11 +122,24 @@ def predict_fertilizer():
     encoder = get_fertilizer_label_encoder()
 
 
-    # ==========================================
-    # CREATE INPUT DATAFRAME
-    # ==========================================
+  # ==========================================
+# CREATE INPUT DATAFRAME
+# ==========================================
 
-    X = pd.DataFrame([row])
+# Match trained model column names
+
+    model_row = row.copy()
+
+    model_row["Moisture"] = model_row.pop("Soil_Moisture")
+
+    model_row["Nitrogen"] = model_row.pop("Nitrogen_Level")
+
+    model_row["Phosphorous"] = model_row.pop("Phosphorus_Level")
+
+    model_row["Potassium"] = model_row.pop("Potassium_Level")
+
+
+    X = pd.DataFrame([model_row])
 
 
     # ==========================================

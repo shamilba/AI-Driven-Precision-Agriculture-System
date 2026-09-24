@@ -268,6 +268,103 @@ class ApiService {
 
   }
 
+    // ===============================
+  // YIELD PREDICTION
+  // ===============================
+
+
+  static Future<Map<String,dynamic>> recommendYield({
+
+    required String state,
+
+    required String crop,
+
+    required String season,
+
+    required double area,
+
+    required double rainfall,
+
+    required double fertilizer,
+
+    required double pesticide,
+
+    required double temperature,
+
+  }) async {
+
+
+    final response = await http.post(
+
+
+      Uri.parse(
+        "$baseUrl/api/predict/yield",
+      ),
+
+
+      headers: {
+
+        "Content-Type":
+        "application/json"
+
+      },
+
+
+      body: jsonEncode({
+
+
+        "State":
+        state,
+
+
+        "Crop":
+        crop,
+
+
+        "Season":
+        season,
+
+
+        "Area":
+        area,
+
+
+        "Rainfall":
+        rainfall,
+
+
+        "Fertilizer":
+        fertilizer,
+
+
+        "Pesticide":
+        pesticide,
+
+
+        "Temperature":
+        temperature,
+
+
+      }),
+
+    );
+
+
+
+    if(response.statusCode == 200){
+
+      return jsonDecode(response.body);
+
+    }
+
+
+    throw Exception(
+      "Yield prediction failed: ${response.body}"
+    );
+
+
+  }
+
 
 
 }

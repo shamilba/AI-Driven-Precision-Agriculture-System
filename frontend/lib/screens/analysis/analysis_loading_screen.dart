@@ -214,6 +214,40 @@ yieldLastSeason:
 
 );
 
+// ===============================
+// YIELD PREDICTION
+// ===============================
+
+
+final yieldResult =
+await ApiService.recommendYield(
+
+  state:
+  "Karnataka",
+
+  crop:
+  widget.crop,
+
+  season:
+  "Kharif",
+
+  area:
+  5.0,
+
+  rainfall:
+  widget.rainfall,
+
+  fertilizer:
+  widget.n.toDouble(),
+
+  pesticide:
+  4.5,
+
+  temperature:
+  widget.temperature,
+
+);
+
 
 
 
@@ -233,27 +267,26 @@ cropResult,
 "fertilizer_recommendation":
 fertilizerResult,
 
+
+"yield_prediction":
+yieldResult,
+
 };
 
 
 
 
-
 Navigator.pushReplacement(
-
-context,
-
-
-MaterialPageRoute(
-
-builder: (_) => RecommendationScreen(
-
-result: result,
-
-),
-
-),
-
+  context,
+  MaterialPageRoute(
+    builder: (_) => RecommendationScreen(
+      result: result,
+      selectedCrop: widget.crop,
+      temperature: widget.temperature,
+      humidity: widget.humidity,
+      rainfall: widget.rainfall,
+    ),
+  ),
 );
 
 

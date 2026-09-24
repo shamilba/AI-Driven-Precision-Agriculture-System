@@ -18,18 +18,15 @@ Run (prod):
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, jsonify
 from flask_cors import CORS
-from routes.analyze_routes import analyze_bp
 
 import config
 from routes.crop_routes import crop_bp
 from routes.yield_routes import yield_bp
 from routes.fertilizer_routes import fertilizer_bp
-from routes.analysis_routes import analysis_bp
 
 
 def create_app():
@@ -41,8 +38,6 @@ def create_app():
     app.register_blueprint(crop_bp)
     app.register_blueprint(yield_bp)
     app.register_blueprint(fertilizer_bp)
-    app.register_blueprint(analysis_bp)
-    app.register_blueprint(analyze_bp)
 
     @app.route("/api/health", methods=["GET"])
     def health():

@@ -50,9 +50,17 @@ it with the actual public datasets:
    `State,Crop,Season,Area,Rainfall,Fertilizer,Pesticide,Temperature,Yield`
    (rename columns to match if your chosen CSV differs — see
    `models/train_yield_prediction.py`).
-3. **Fertilizer recommendation** — Kaggle: *"Fertilizer Prediction Dataset"*.
-   Save as `data/fertilizer_recommendation.csv` with columns:
-   `Temperature,Humidity,Moisture,Soil_Type,Crop_Type,Nitrogen,Phosphorous,Potassium,Fertilizer_Name`
+3. Fertilizer recommendation — Dataset: fertilizer_recommendation_new.csv.
+
+   This dataset contains 10,000 records and 19 input features covering
+   soil properties, nutrient levels, crop information, environmental
+   conditions, and previous agricultural information.
+
+   Target column:
+   Recommended_Fertilizer
+
+   The model predicts 7 fertilizer classes:
+   Compost, DAP, MOP, NPK, SSP, Urea, Zinc Sulphate.
 
 As soon as a matching CSV exists at those paths, `utils/data_loader.py`
 automatically uses it instead of the synthetic data — no other code changes
@@ -144,3 +152,204 @@ domain) before shipping.
 - Add a disease-detection endpoint by adding a CNN (e.g. TensorFlow/Keras)
   under `models/`, a route under `routes/`, and registering the blueprint
   in `app.py` the same way the other three are wired up.
+# AI Model Documentation
+
+## 1. Crop Recommendation Model
+
+### Dataset
+- Dataset: crop_recommendation.csv
+- Rows: 2,200
+- Input features: 7
+- Target: label
+- Features:
+  - Nitrogen (N)
+  - Phosphorus (P)
+  - Potassium (K)
+  - Temperature
+  - Humidity
+  - pH
+  - Rainfall
+
+### Algorithm
+Random Forest Classifier with 300 decision trees.
+
+### Model Performance
+- Training Accuracy: 99.86%
+- Testing Accuracy: 99.32%
+
+### Algorithm Comparison
+- Decision Tree Test Accuracy: 97.95%
+- Random Forest Test Accuracy: 99.32%
+
+Random Forest was retained because it achieved higher test accuracy on the same train/test split.
+
+### Important Features
+
+| Feature | Importance |
+|---|---:|
+| Rainfall | 22.15% |
+| Humidity | 21.19% |
+| Potassium | 17.92% |
+| Phosphorus | 15.37% |
+| Nitrogen | 10.39% |
+| Temperature | 7.58% |
+| pH | 5.39% |
+
+### Why Random Forest?
+- Uses multiple decision trees.
+- Captures non-linear relationships.
+- Works well with multiple numerical features.
+- Provides feature-importance information.
+- Performed better than the Decision Tree in our comparison.
+
+### Project Explanation
+The Crop Recommendation module uses a Random Forest Classifier trained on soil and environmental parameters such as N, P, K, temperature, humidity, pH, and rainfall to recommend a suitable crop.
+
+## 2. Yield Prediction Model
+
+### Dataset
+
+- Dataset: crop_yield.csv
+- Rows: 19,689
+- Target: Yield
+- Input features:
+  - State
+  - Crop
+  - Season
+  - Area
+  - Rainfall
+  - Fertilizer
+  - Pesticide
+  - Temperature
+
+### Data Preparation
+
+The original dataset contains:
+- Annual_Rainfall → used as Rainfall
+- Avg_Temperature → used as Temperature
+
+The `Production` column was excluded from the model inputs because it can cause target leakage when predicting Yield.
+
+### Algorithm
+
+Random Forest Regressor with 300 decision trees.
+
+### Model Performance
+
+- Training R²: 99.31%
+- Testing MAE: 10.9312
+- Testing RMSE: 177.0489
+- Testing R²: 96.09%
+
+### Important Features
+
+The Random Forest model identified the following important transformed features:
+
+| Feature | Importance |
+|---|---:|
+| Crop_Coconut | 84.11% |
+| Temperature | 5.51% |
+| State_West Bengal | 2.46% |
+| Pesticide | 1.88% |
+| Area | 1.82% |
+| Fertilizer | 1.65% |
+| Rainfall | 1.05% |
+
+These feature-importance values indicate the features that contributed most to the model's predictions. They should not be interpreted as causal relationships.
+
+### Why Random Forest?
+
+- Combines predictions from multiple decision trees.
+- Can model non-linear relationships.
+- Handles both numerical and categorical agricultural information through preprocessing.
+- Provides feature-importance information.
+- Produces strong predictive performance on the test dataset.
+
+### Project Explanation
+
+The Yield Prediction module uses a Random Forest Regressor to estimate crop yield using information such as crop type, state, season, cultivated area, rainfall, fertilizer usage, pesticide usage, and temperature.
+
+## 3. Fertilizer Recommendation Model
+
+### Dataset
+
+- Dataset: fertilizer_recommendation_new.csv
+- Rows: 10,000
+- Target: Recommended_Fertilizer
+- Number of fertilizer classes: 7
+
+The fertilizer classes are:
+- Compost
+- DAP
+- MOP
+- NPK
+- SSP
+- Urea
+- Zinc Sulphate
+
+### Input Features
+
+#### Categorical Features
+- Soil Type
+- Crop Type
+- Crop Growth Stage
+- Season
+- Irrigation Type
+- Previous Crop
+- Region
+
+#### Numerical Features
+- Soil pH
+- Soil Moisture
+- Organic Carbon
+- Electrical Conductivity
+- Nitrogen Level
+- Phosphorus Level
+- Potassium Level
+- Temperature
+- Humidity
+- Rainfall
+- Fertilizer Used Last Season
+- Yield Last Season
+
+### Algorithm
+
+Random Forest Classifier with 300 decision trees.
+
+### Model Performance
+
+- Training Accuracy: 100.00%
+- Testing Accuracy: 87.25%
+- Testing Balanced Accuracy: 72.51%
+
+The model was evaluated using both normal accuracy and balanced accuracy because the fertilizer classes are not equally represented in the dataset.
+
+### Classification Performance
+
+| Fertilizer | Precision | Recall | F1-Score |
+|---|---:|---:|---:|
+| Compost | 0.77 | 0.82 | 0.79 |
+| DAP | 0.96 | 0.92 | 0.94 |
+| MOP | 0.84 | 0.86 | 0.85 |
+| NPK | 0.90 | 0.70 | 0.78 |
+| SSP | 0.00 | 0.00 | 0.00 |
+| Urea | 0.94 | 0.95 | 0.94 |
+| Zinc Sulphate | 0.60 | 0.83 | 0.70 |
+
+### Why Random Forest?
+
+- Uses multiple decision trees.
+- Can capture non-linear relationships between soil, crop and environmental conditions.
+- Handles a mixture of numerical and categorical features after preprocessing.
+- Provides a strong baseline for multi-class fertilizer recommendation.
+- The model can be further improved, particularly for minority classes.
+
+### Current Limitation
+
+Although the overall testing accuracy is 87.25%, the model does not perform equally well for every fertilizer class. In particular, SSP has very low recall in the current evaluation.
+
+Therefore, further improvement using techniques such as class balancing, oversampling and model comparison is planned.
+
+### Project Explanation
+
+The Fertilizer Recommendation module uses a Random Forest Classifier to recommend a fertilizer based on soil properties, nutrient levels, crop information, environmental conditions and previous agricultural information.

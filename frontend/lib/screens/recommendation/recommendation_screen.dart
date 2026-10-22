@@ -124,19 +124,16 @@ class RecommendationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context){
 
-
-    final cropResult =
-    result["crop_prediction"];
-
+print(result);
+    final cropResult = result;
 
 
-    final fertilizerResult =
-    result["fertilizer_recommendation"];
+final fertilizerResult =
+result["fertilizer_recommendation"] ?? {};
 
 
-
-    final yieldResult =
-    result["yield_prediction"];
+final yieldResult =
+result["yield_prediction"] ?? {};
 
 
 
@@ -271,8 +268,8 @@ class RecommendationScreen extends StatelessWidget {
 
               value:
 
-              fertilizerResult["recommended_fertilizer"]
-                  .toString(),
+fertilizerResult["recommended_fertilizer"] ??
+"Not generated",
 
               color:
               Colors.orange,
@@ -293,7 +290,11 @@ class RecommendationScreen extends StatelessWidget {
 
               value:
 
-              "${yieldResult["predicted_yield_tons_per_hectare"]} Tons/Hectare",
+yieldResult.isEmpty
+?
+"Not predicted"
+:
+"${yieldResult["predicted_yield_tons_per_hectare"]} Tons/Hectare",
 
               color:
               Colors.blue,

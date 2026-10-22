@@ -22,6 +22,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, jsonify
 from flask_cors import CORS
+from database.database import db
+from routes.auth_routes import auth_bp
+from routes.history_routes import history_bp
 
 import config
 from routes.crop_routes import crop_bp
@@ -31,6 +34,10 @@ from routes.fertilizer_routes import fertilizer_bp
 
 def create_app():
     app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///agriculture.db"
+
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    db.init_app(app)
     # Wide-open CORS so the Flutter app (web/Android/iOS) can call this
     # freely during development. Restrict `origins` before production use.
     CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -38,6 +45,8 @@ def create_app():
     app.register_blueprint(crop_bp)
     app.register_blueprint(yield_bp)
     app.register_blueprint(fertilizer_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(history_bp)
 
     @app.route("/api/health", methods=["GET"])
     def health():
@@ -65,6 +74,10 @@ def create_app():
 
 
 app = create_app()
+
+with app.app_context():
+
+    db.create_all()
 
 if __name__ == "__main__":
     app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG)

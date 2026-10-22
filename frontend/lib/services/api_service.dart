@@ -31,11 +31,9 @@ class ApiService {
 
     final response = await http.post(
 
-
       Uri.parse(
         "$baseUrl/api/predict/crop",
       ),
-
 
       headers: {
 
@@ -47,29 +45,14 @@ class ApiService {
 
       body: jsonEncode({
 
-
         "N": n,
-
         "P": p,
-
         "K": k,
 
-
-        "temperature":
-        temperature,
-
-
-        "humidity":
-        humidity,
-
-
-        "ph":
-        ph,
-
-
-        "rainfall":
-        rainfall,
-
+        "temperature": temperature,
+        "humidity": humidity,
+        "ph": ph,
+        "rainfall": rainfall,
 
       }),
 
@@ -95,9 +78,8 @@ class ApiService {
 
 
 
-
   // ===============================
-  // FERTILIZER RECOMMENDATION
+  // FERTILIZER PREDICTION
   // ===============================
 
 
@@ -157,11 +139,12 @@ class ApiService {
 
 
       Uri.parse(
-        "$baseUrl/api/predict/fertilizer",
+        "$baseUrl/api/predict/fertilizer"
       ),
 
 
-      headers: {
+
+      headers:{
 
         "Content-Type":
         "application/json"
@@ -169,7 +152,8 @@ class ApiService {
       },
 
 
-      body: jsonEncode({
+
+      body:jsonEncode({
 
 
         "Soil_Type":
@@ -250,7 +234,9 @@ class ApiService {
 
       }),
 
+
     );
+
 
 
 
@@ -261,19 +247,29 @@ class ApiService {
     }
 
 
+
     throw Exception(
+
       "Fertilizer prediction failed: ${response.body}"
+
     );
 
 
   }
 
-    // ===============================
+
+
+
+
+
+
+  // ===============================
   // YIELD PREDICTION
   // ===============================
 
 
   static Future<Map<String,dynamic>> recommendYield({
+
 
     required String state,
 
@@ -291,18 +287,21 @@ class ApiService {
 
     required double temperature,
 
+
   }) async {
+
 
 
     final response = await http.post(
 
 
       Uri.parse(
-        "$baseUrl/api/predict/yield",
+        "$baseUrl/api/predict/yield"
       ),
 
 
-      headers: {
+
+      headers:{
 
         "Content-Type":
         "application/json"
@@ -310,7 +309,8 @@ class ApiService {
       },
 
 
-      body: jsonEncode({
+
+      body:jsonEncode({
 
 
         "State":
@@ -347,7 +347,9 @@ class ApiService {
 
       }),
 
+
     );
+
 
 
 
@@ -358,13 +360,410 @@ class ApiService {
     }
 
 
+
     throw Exception(
+
       "Yield prediction failed: ${response.body}"
+
     );
 
 
   }
 
 
+
+
+
+
+
+  // ===============================
+  // SAVE HISTORY
+  // ===============================
+
+
+  static Future<void> saveHistory({
+
+
+    required int userId,
+
+
+    required String selectedCrop,
+
+
+    required String recommendedCrop,
+
+
+    required String fertilizer,
+
+
+    required double yieldPrediction,
+
+
+    required double temperature,
+
+
+    required double humidity,
+
+
+    required double rainfall,
+
+
+  }) async {
+
+
+
+    final response = await http.post(
+
+
+      Uri.parse(
+
+        "$baseUrl/api/history/save"
+
+      ),
+
+
+
+      headers:{
+
+
+        "Content-Type":
+
+        "application/json"
+
+
+      },
+
+
+
+      body:jsonEncode({
+
+
+        "user_id":
+        userId,
+
+
+        "selected_crop":
+        selectedCrop,
+
+
+        "recommended_crop":
+        recommendedCrop,
+
+
+        "fertilizer":
+        fertilizer,
+
+
+        "yield_prediction":
+        yieldPrediction,
+
+
+        "temperature":
+        temperature,
+
+
+        "humidity":
+        humidity,
+
+
+        "rainfall":
+        rainfall,
+
+
+      }),
+
+
+    );
+
+
+
+
+
+    if(response.statusCode != 201){
+
+
+      throw Exception(
+
+        "Failed to save history"
+
+      );
+
+
+    }
+
+
+
+  }
+
+
+
+
+
+
+
+  // ===============================
+  // GET HISTORY
+  // ===============================
+
+
+  static Future<List<dynamic>> getHistory(
+
+      int userId
+
+      ) async {
+
+
+
+    final response = await http.get(
+
+
+      Uri.parse(
+
+        "$baseUrl/api/history/$userId"
+
+      ),
+
+
+    );
+
+
+
+
+    if(response.statusCode == 200){
+
+
+      return jsonDecode(response.body);
+
+
+    }
+
+
+
+    throw Exception(
+
+      "Failed to load history"
+
+    );
+
+
+  }
+
+
+
+
+
+
+
+  // ===============================
+  // LOGIN
+  // ===============================
+
+
+  static Future<Map<String,dynamic>> login({
+
+
+    required String email,
+
+
+    required String password,
+
+
+  }) async {
+
+
+
+    final response = await http.post(
+
+
+
+      Uri.parse(
+
+        "$baseUrl/api/login"
+
+      ),
+
+
+
+      headers:{
+
+
+        "Content-Type":
+
+        "application/json"
+
+
+      },
+
+
+
+      body:jsonEncode({
+
+
+        "email":
+
+        email,
+
+
+        "password":
+
+        password,
+
+
+      }),
+
+
+
+    );
+
+
+
+
+
+    if(response.statusCode == 200){
+
+
+      return jsonDecode(response.body);
+
+
+    }
+
+
+
+
+    final error =
+    jsonDecode(response.body);
+
+
+
+    throw Exception(
+
+      error["error"]
+
+      ??
+
+
+      "Login failed"
+
+    );
+
+
+  }
+
+// ===============================
+// GET LATEST ANALYSIS
+// ===============================
+
+static Future<Map<String,dynamic>> getLatestAnalysis(
+
+int userId
+
+) async {
+
+
+final response = await http.get(
+
+Uri.parse(
+"$baseUrl/api/history/latest/$userId"
+),
+
+);
+
+
+
+if(response.statusCode == 200){
+
+return jsonDecode(response.body);
+
+}
+
+
+
+throw Exception(
+"Failed to load latest analysis"
+);
+
+
+}
+// ===============================
+// REGISTER USER
+// ===============================
+
+static Future<Map<String,dynamic>> register({
+
+required String name,
+
+required String email,
+
+required String password,
+
+required String location,
+
+
+}) async {
+
+
+final response = await http.post(
+
+
+Uri.parse(
+"$baseUrl/api/register"
+),
+
+
+
+headers:{
+
+
+"Content-Type":
+"application/json"
+
+
+},
+
+
+
+body:jsonEncode({
+
+
+"name":name,
+
+"email":email,
+
+"password":password,
+
+"location":location,
+
+
+}),
+
+
+
+);
+
+
+
+if(response.statusCode == 201){
+
+
+return jsonDecode(response.body);
+
+
+}
+
+
+
+throw Exception(
+
+jsonDecode(response.body)["error"]
+
+??
+
+"Registration failed"
+
+);
+
+
+
+}
 
 }

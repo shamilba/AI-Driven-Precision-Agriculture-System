@@ -1,21 +1,168 @@
 import 'package:flutter/material.dart';
-import 'theme/app_theme.dart';
-import 'screens/splash/splash_screen.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const AgricultureApp());
+import 'screens/auth/login_screen.dart';
+import 'screens/home/home_screen.dart';
+import 'screens/splash/splash_screen.dart';
+import 'services/theme_service.dart';
+
+
+
+void main(){
+
+
+runApp(
+
+
+ChangeNotifierProvider(
+
+
+create:(_)=>
+
+ThemeService(),
+
+
+
+child:
+
+const AgricultureApp(),
+
+
+),
+
+
+);
+
+
+
 }
 
-class AgricultureApp extends StatelessWidget {
-  const AgricultureApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'AI-Driven Precision Agriculture',
-      theme: AppTheme.lightTheme,
-      home: const SplashScreen(),
-    );
-  }
+
+
+
+
+class AgricultureApp extends StatelessWidget {
+
+
+const AgricultureApp({
+
+super.key,
+
+});
+
+
+
+
+@override
+Widget build(BuildContext context){
+
+
+
+return Consumer<ThemeService>(
+
+
+builder:(context,theme,child){
+
+
+if(!theme.loaded){
+
+return const MaterialApp(
+
+home:
+
+Scaffold(
+
+body:
+
+Center(
+
+child:
+
+CircularProgressIndicator(),
+
+),
+
+),
+
+);
+
+}
+
+
+return MaterialApp(
+
+
+debugShowCheckedModeBanner:false,
+
+
+
+theme:
+
+ThemeData(
+
+primarySwatch:
+Colors.green,
+
+brightness:
+Brightness.light,
+
+),
+
+
+
+
+darkTheme:
+
+ThemeData(
+
+brightness:
+Brightness.dark,
+
+primarySwatch:
+Colors.green,
+
+),
+
+
+
+
+themeMode:
+
+theme.isDark
+
+?
+
+ThemeMode.dark
+
+:
+
+ThemeMode.light,
+
+
+
+
+
+home:
+
+const SplashScreen(),
+
+
+
+);
+
+
+
+},
+
+
+
+);
+
+
+
+}
+
+
+
 }

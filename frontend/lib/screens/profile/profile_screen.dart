@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../services/user_session.dart';
+import '../auth/login_screen.dart';
+
+
 
 class ProfileScreen extends StatelessWidget {
 
-const ProfileScreen({super.key});
+
+const ProfileScreen({
+super.key,
+});
+
 
 
 @override
@@ -12,39 +20,48 @@ Widget build(BuildContext context){
 
 return Scaffold(
 
-appBar:
-AppBar(
+
+appBar: AppBar(
 
 title:
-const Text("Profile"),
+const Text(
+"Farmer Profile"
+),
 
 ),
 
 
 
 body:
-Center(
+
+Padding(
+
+padding:
+const EdgeInsets.all(20),
+
+
 
 child:
+
 Column(
 
-mainAxisAlignment:
-MainAxisAlignment.center,
 
 
 children:[
 
 
+
 const CircleAvatar(
 
-radius:50,
+radius:45,
 
 child:
+
 Icon(
 
 Icons.person,
 
-size:60,
+size:50,
 
 ),
 
@@ -52,21 +69,36 @@ size:60,
 
 
 
-const SizedBox(height:20),
+
+const SizedBox(height:25),
 
 
+
+
+Card(
+
+child:
+
+ListTile(
+
+leading:
+const Icon(
+Icons.person
+),
+
+title:
 
 const Text(
+"Name"
+),
 
-"Farmer User",
 
-style:
-TextStyle(
+subtitle:
 
-fontSize:24,
+Text(
+UserSession.userName ?? "Farmer"
+),
 
-fontWeight:
-FontWeight.bold,
 
 ),
 
@@ -74,24 +106,150 @@ FontWeight.bold,
 
 
 
-const SizedBox(height:10),
 
 
+Card(
+
+child:
+
+ListTile(
+
+leading:
+const Icon(
+Icons.email
+),
+
+
+title:
 
 const Text(
+"Email"
+),
 
-"AI Agriculture Member",
+
+
+subtitle:
+
+Text(
+UserSession.email ?? ""
+),
+
+
 
 ),
 
-],
+),
+
+
+
+
+
+
+const Spacer(),
+
+
+
+
+
+
+SizedBox(
+
+width:
+double.infinity,
+
+
+child:
+
+ElevatedButton.icon(
+
+
+
+icon:
+
+const Icon(
+Icons.logout
+),
+
+
+
+label:
+
+const Text(
+"Logout"
+),
+
+
+
+onPressed:() async {
+
+
+
+await UserSession.logout();
+
+
+
+if(!context.mounted)return;
+
+
+
+Navigator.pushAndRemoveUntil(
+
+
+
+context,
+
+
+
+MaterialPageRoute(
+
+
+
+builder:(_)=>
+
+const LoginScreen(),
+
+
 
 ),
 
-),
+
+
+(route)=>false,
+
+
 
 );
 
+
+
+},
+
+
+
+),
+
+
+),
+
+
+
+],
+
+
+
+),
+
+
+
+),
+
+
+
+);
+
+
+
 }
+
 
 }

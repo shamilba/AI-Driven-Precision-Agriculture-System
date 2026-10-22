@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
-import '../../services/api_service.dart';
 import '../recommendation/recommendation_screen.dart';
+import '../../services/api_service.dart';
+
 
 
 class AnalysisLoadingScreen extends StatefulWidget {
@@ -9,16 +11,14 @@ class AnalysisLoadingScreen extends StatefulWidget {
 
   final String crop;
 
-  final int n;
-  final int p;
-  final int k;
-
+  final double n;
+  final double p;
+  final double k;
 
   final double temperature;
   final double humidity;
   final double ph;
   final double rainfall;
-
 
   final String soilType;
   final double soilMoisture;
@@ -56,8 +56,22 @@ class AnalysisLoadingScreen extends StatefulWidget {
 
 
 
+
+
 class _AnalysisLoadingScreenState
 extends State<AnalysisLoadingScreen>{
+
+
+
+Timer? timer;
+
+
+String message =
+"Analyzing soil data...";
+
+
+
+
 
 
 
@@ -73,45 +87,104 @@ startAnalysis();
 
 
 
-Future<void> startAnalysis() async {
+
+
+
+void startAnalysis(){
+
+
+timer = Timer.periodic(
+
+const Duration(seconds:2),
+
+(t){
+
+
+if(!mounted){
+
+t.cancel();
+
+return;
+
+}
+
+
+
+setState((){
+
+
+if(message=="Analyzing soil data..."){
+
+message="Checking crop health...";
+
+}
+
+else if(message=="Checking crop health..."){
+
+message="Generating AI recommendation...";
+
+}
+
+else if(message=="Generating AI recommendation..."){
+
+message="Calculating final results...";
+
+}
+
+else{
+
+message="Preparing report...";
+
+}
+
+
+
+});
+
+
+}
+
+);
+
+
+
+runAIAnalysis();
+
+
+}
+
+
+
+
+
+
+
+
+
+Future<void> runAIAnalysis() async {
 
 
 try{
 
 
-// Show AI loading animation
-
-await Future.delayed(
-const Duration(seconds:3),
-);
+final result = await ApiService.recommendCrop(
 
 
+n: widget.n,
 
-// ===============================
-// CROP PREDICTION
-// ===============================
+p: widget.p,
+
+k: widget.k,
 
 
-final cropResult =
-await ApiService.recommendCrop(
+temperature: widget.temperature,
 
-n: widget.n.toDouble(),
+humidity: widget.humidity,
 
-p: widget.p.toDouble(),
+ph: widget.ph,
 
-k: widget.k.toDouble(),
+rainfall: widget.rainfall,
 
-temperature:
-widget.temperature,
-
-humidity:
-widget.humidity,
-
-ph:
-widget.ph,
-
-rainfall:
-widget.rainfall,
 
 );
 
@@ -119,184 +192,72 @@ widget.rainfall,
 
 
 
-// ===============================
-// FERTILIZER PREDICTION
-// ===============================
+if(!mounted)return;
 
 
+timer?.cancel();
 
-final fertilizerResult =
-await ApiService.recommendFertilizer(
-
-
-soilType:
-widget.soilType,
-
-
-soilPh:
-widget.ph,
-
-
-soilMoisture:
-widget.soilMoisture,
-
-
-
-// Default values for hidden fields
-
-organicCarbon:
-1.2,
-
-
-electricalConductivity:
-0.8,
-
-
-
-nitrogenLevel:
-widget.n.toDouble(),
-
-
-phosphorusLevel:
-widget.p.toDouble(),
-
-
-potassiumLevel:
-widget.k.toDouble(),
-
-
-
-temperature:
-widget.temperature,
-
-
-humidity:
-widget.humidity,
-
-
-rainfall:
-widget.rainfall,
-
-
-
-cropType:
-widget.crop,
-
-
-
-cropGrowthStage:
-"Vegetative",
-
-
-season:
-"Kharif",
-
-
-irrigationType:
-"Drip",
-
-
-previousCrop:
-"Rice",
-
-
-region:
-"South",
-
-
-
-fertilizerUsedLastSeason:
-1,
-
-
-yieldLastSeason:
-3.5,
-
-);
-
-// ===============================
-// YIELD PREDICTION
-// ===============================
-
-
-final yieldResult =
-await ApiService.recommendYield(
-
-  state:
-  "Karnataka",
-
-  crop:
-  widget.crop,
-
-  season:
-  "Kharif",
-
-  area:
-  5.0,
-
-  rainfall:
-  widget.rainfall,
-
-  fertilizer:
-  widget.n.toDouble(),
-
-  pesticide:
-  4.5,
-
-  temperature:
-  widget.temperature,
-
-);
-
-
-
-
-
-if(!mounted) return;
-
-
-
-
-final result = {
-
-
-"crop_prediction":
-cropResult,
-
-
-"fertilizer_recommendation":
-fertilizerResult,
-
-
-"yield_prediction":
-yieldResult,
-
-};
 
 
 
 
 Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(
-    builder: (_) => RecommendationScreen(
-      result: result,
-      selectedCrop: widget.crop,
-      temperature: widget.temperature,
-      humidity: widget.humidity,
-      rainfall: widget.rainfall,
-    ),
-  ),
+
+context,
+
+
+MaterialPageRoute(
+
+builder:(_)=>
+
+
+RecommendationScreen(
+
+
+selectedCrop: widget.crop,
+
+
+result: result,
+
+
+temperature: widget.temperature,
+
+
+humidity: widget.humidity,
+
+
+rainfall: widget.rainfall,
+
+
+),
+
+
+),
+
+
 );
 
 
 
 }
 
+
+
 catch(e){
 
 
-if(!mounted) return;
+timer?.cancel();
+
+
+print(
+
+"Analysis error: $e"
+
+);
+
+
+
+if(!mounted)return;
 
 
 
@@ -306,8 +267,12 @@ ScaffoldMessenger.of(context)
 
 SnackBar(
 
-content: Text(
-"Prediction failed: $e",
+content:
+
+Text(
+
+"Analysis failed: $e"
+
 ),
 
 ),
@@ -317,15 +282,33 @@ content: Text(
 
 
 
-Navigator.pop(context);
-
-
-
 }
 
 
 
 }
+
+
+
+
+
+
+
+
+
+@override
+void dispose(){
+
+
+timer?.cancel();
+
+
+super.dispose();
+
+
+}
+
+
 
 
 
@@ -340,15 +323,20 @@ Widget build(BuildContext context){
 return Scaffold(
 
 
-body:Center(
+
+body:
+
+Center(
 
 
-child:Column(
+child:
+
+Column(
 
 
 mainAxisAlignment:
-MainAxisAlignment.center,
 
+MainAxisAlignment.center,
 
 
 children:[
@@ -367,20 +355,25 @@ color:Colors.green,
 
 
 
-const SizedBox(height:30),
+
+const SizedBox(height:25),
+
 
 
 
 
 const Text(
 
-"AI is analyzing your crop 🌱",
+"AI Crop Analysis",
 
-style:TextStyle(
+style:
 
-fontSize:22,
+TextStyle(
+
+fontSize:26,
 
 fontWeight:
+
 FontWeight.bold,
 
 ),
@@ -390,34 +383,54 @@ FontWeight.bold,
 
 
 
-const SizedBox(height:20),
 
-
-
-
-const Text(
-
-"Checking soil conditions\nGenerating recommendations",
-
-textAlign:TextAlign.center,
-
-style:TextStyle(
-
-color:Colors.grey,
-
-),
-
-),
-
-
-
-
-const SizedBox(height:30),
+const SizedBox(height:25),
 
 
 
 
 const CircularProgressIndicator(),
+
+
+
+
+
+const SizedBox(height:25),
+
+
+
+
+
+AnimatedSwitcher(
+
+duration:
+
+const Duration(milliseconds:500),
+
+
+
+child:
+
+Text(
+
+message,
+
+key:
+
+ValueKey(message),
+
+style:
+
+const TextStyle(
+
+fontSize:17,
+
+),
+
+),
+
+
+),
 
 
 

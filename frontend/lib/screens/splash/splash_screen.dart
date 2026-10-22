@@ -1,23 +1,33 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import '../auth/login_screen.dart';
+
 
 
 class SplashScreen extends StatefulWidget {
 
-  const SplashScreen({super.key});
+
+const SplashScreen({
+super.key,
+});
 
 
-  @override
-  State<SplashScreen> createState()
-  => _SplashScreenState();
+
+@override
+State<SplashScreen> createState() =>
+_SplashScreenState();
+
 
 }
 
 
 
+
 class _SplashScreenState
 extends State<SplashScreen>{
+
 
 
 @override
@@ -32,6 +42,7 @@ const Duration(seconds:3),
 
 (){
 
+
 Navigator.pushReplacement(
 
 context,
@@ -39,17 +50,21 @@ context,
 MaterialPageRoute(
 
 builder:(_)=>
+
 const LoginScreen(),
 
 ),
 
 );
 
+
 },
 
 );
 
+
 }
+
 
 
 
@@ -59,39 +74,18 @@ Widget build(BuildContext context){
 
 return Scaffold(
 
-body:Container(
 
-width:double.infinity,
+body:
 
-
-decoration:
-const BoxDecoration(
-
-gradient:
-LinearGradient(
-
-begin:Alignment.topCenter,
-
-end:Alignment.bottomCenter,
+Center(
 
 
-colors:[
+child:
 
-Colors.green,
-
-Color(0xffE8F5E9),
-
-],
-
-),
-
-),
-
-
-
-child:Column(
+Column(
 
 mainAxisAlignment:
+
 MainAxisAlignment.center,
 
 
@@ -99,30 +93,55 @@ children:[
 
 
 
-Container(
-
-padding:
-const EdgeInsets.all(25),
-
-
-decoration:
-const BoxDecoration(
-
-color:Colors.white,
-
-shape:BoxShape.circle,
-
-),
-
-
-child:
 const Icon(
 
 Icons.agriculture,
 
-size:90,
+size:100,
 
 color:Colors.green,
+
+),
+
+
+
+const SizedBox(height:20),
+
+
+
+const Text(
+
+"AI Precision Agriculture",
+
+style:
+
+TextStyle(
+
+fontSize:26,
+
+fontWeight:
+
+FontWeight.bold,
+
+),
+
+),
+
+
+
+const SizedBox(height:10),
+
+
+
+const Text(
+
+"Smart Farming with AI",
+
+style:
+
+TextStyle(
+
+fontSize:16,
 
 ),
 
@@ -134,75 +153,24 @@ const SizedBox(height:30),
 
 
 
-const Text(
-
-"AI-Driven\nPrecision Agriculture",
-
-textAlign:
-TextAlign.center,
-
-
-style:
-TextStyle(
-
-fontSize:28,
-
-fontWeight:
-FontWeight.bold,
-
-color:Colors.white,
-
-),
-
-),
-
-
-
-const SizedBox(height:15),
-
-
-
-const Text(
-
-"Smart farming with Artificial Intelligence",
-
-textAlign:
-TextAlign.center,
-
-
-style:
-TextStyle(
-
-fontSize:16,
-
-color:Colors.white,
-
-),
-
-),
-
-
-
-const SizedBox(height:40),
-
-
-
-const CircularProgressIndicator(
-
-color:Colors.white,
-
-)
+const CircularProgressIndicator(),
 
 
 
 ],
 
-),
 
 ),
+
+
+
+),
+
 
 );
 
+
 }
+
 
 }

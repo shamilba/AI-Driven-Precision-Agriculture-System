@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'user_session.dart';
 
 class ApiService {
 
@@ -8,6 +8,123 @@ class ApiService {
   static const String baseUrl =
       "http://localhost:5000";
 
+static Future<void> saveAnalysisHistory({
+
+  required String crop,
+
+  required Map<String,dynamic> result,
+
+  required double temperature,
+
+  required double humidity,
+
+  required double rainfall,
+
+}) async {
+
+
+  final cropData =
+      result["crop_prediction"];
+
+
+  final fertilizerData =
+      result["fertilizer_recommendation"];
+
+
+  final yieldData =
+      result["yield_prediction"];
+
+
+
+
+  final response = await http.post(
+
+
+    Uri.parse(
+      "$baseUrl/api/history/save"
+    ),
+
+
+
+    headers:{
+
+      "Content-Type":
+      "application/json",
+
+    },
+
+
+
+    body:jsonEncode({
+
+
+
+      "user_id":
+      UserSession.userId,
+
+
+
+      "selected_crop":
+      crop,
+
+
+
+      "recommended_crop":
+
+      cropData["recommended_crop"] ??
+      cropData["crop"] ??
+      "Unknown",
+
+
+
+
+      "fertilizer":
+
+      fertilizerData["fertilizer"] ??
+      fertilizerData["recommended_fertilizer"] ??
+      "Unknown",
+
+
+
+
+      "yield_prediction":
+
+      yieldData["predicted_yield_tons_per_hectare"] ??
+      yieldData["yield"] ??
+      0,
+
+
+
+      "temperature":
+      temperature,
+
+
+      "humidity":
+      humidity,
+
+
+      "rainfall":
+      rainfall,
+
+
+
+    }),
+
+  );
+
+
+
+
+  if(response.statusCode != 201){
+
+    throw Exception(
+      "History save failed"
+    );
+
+  }
+
+
+}
 
 
   // ===============================

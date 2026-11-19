@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import '../../services/language_service.dart';
 import '../profile/profile_screen.dart';
 import '../../services/user_session.dart';
 import '../../services/theme_service.dart';
 import '../auth/login_screen.dart';
 
-
+import '../../localization/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
 
@@ -30,6 +30,19 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState
 extends State<SettingsScreen>{
+  String t(BuildContext context,String key){
+
+  final language =
+  Provider.of<LanguageService>(context)
+      .language;
+
+
+  return AppLocalizations.translate(
+    key,
+    language,
+  );
+
+}
 
 
 bool notifications = true;
@@ -51,8 +64,8 @@ AppBar(
 
 title:
 
-const Text(
-"Settings"
+Text(
+t(context,"settings")
 ),
 
 ),
@@ -98,8 +111,8 @@ Icons.person
 
 title:
 
-const Text(
-"Profile"
+Text(
+t(context,"profile")
 ),
 
 
@@ -176,8 +189,8 @@ Icons.dark_mode
 
 title:
 
-const Text(
-"Dark Mode"
+Text(
+t(context,"dark_mode")
 ),
 
 
@@ -238,8 +251,8 @@ Icons.notifications
 
 title:
 
-const Text(
-"Notifications"
+Text(
+t(context,"notifications")
 ),
 
 
@@ -284,7 +297,14 @@ Card(
 
 child:
 
-ListTile(
+Consumer<LanguageService>(
+
+
+builder:(context,languageService,child){
+
+
+return ListTile(
+
 
 
 leading:
@@ -297,16 +317,18 @@ Icons.language
 
 title:
 
-const Text(
-"Language"
+Text(
+t(context,"language")
 ),
 
 
 
 subtitle:
 
-const Text(
-"English"
+Text(
+
+languageService.language
+
 ),
 
 
@@ -317,67 +339,135 @@ onTap:(){
 
 showDialog(
 
-context: context,
+
+context:context,
+
 
 builder:(context){
+
 
 
 return AlertDialog(
 
 
+
 title:
 
-const Text(
-"Language"
+Text(
+t(context,"select_language")
 ),
 
 
 
 content:
 
-const Text(
-"More languages will be added soon."
-),
+Column(
+
+
+mainAxisSize:
+
+MainAxisSize.min,
+
+
+children:[
 
 
 
-actions:[
+"English",
+
+"ಕನ್ನಡ",
+
+"हिन्दी",
 
 
-TextButton(
+].map((lang){
 
-onPressed:(){
+
+
+return RadioListTile<String>(
+
+
+title:
+
+Text(lang),
+
+
+
+value:
+
+lang,
+
+
+
+groupValue:
+
+languageService.language,
+
+
+
+onChanged:(value){
+
+
+
+if(value!=null){
+
+
+
+languageService
+.changeLanguage(value);
+
+
 
 Navigator.pop(context);
 
-},
-
-child:
-
-const Text(
-"OK"
-),
-
-),
 
 
-],
+}
 
-
-);
 
 
 },
+
 
 
 );
 
 
 
-},
+}).toList(),
+
 
 
 ),
+
+
+
+);
+
+
+
+},
+
+
+
+);
+
+
+
+},
+
+
+
+);
+
+
+
+},
+
+
+
+),
+
 
 
 ),
@@ -408,8 +498,8 @@ Icons.logout
 
 title:
 
-const Text(
-"Logout"
+Text(
+t(context,"logout")
 ),
 
 
@@ -422,12 +512,9 @@ await UserSession.logout();
 
 
 
-if(!mounted)return;
-
-
+if(!context.mounted)return;
 
 Navigator.pushAndRemoveUntil(
-
 context,
 
 MaterialPageRoute(

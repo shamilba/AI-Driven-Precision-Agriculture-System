@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../settings/settings_screen.dart';
 import '../crop_health/crop_health_screen.dart';
 import '../history/history_screen.dart';
 import '../profile/profile_screen.dart';
 import '../notifications/notification_screen.dart';
-import '../../services/user_session.dart';
-import '../../services/api_service.dart';
+import '../../services/weather_translation_service.dart';
 import '../../services/weather_service.dart';
-import '../../widgets/analysis_summary_card.dart';
-import '../../widgets/recent_analysis_card.dart';
+import '../../services/user_session.dart';
+
+import '../../localization/app_localizations.dart';
+import '../../services/language_service.dart';
+
+
 
 class DashboardScreen extends StatefulWidget {
 
@@ -23,38 +28,51 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() =>
       _DashboardScreenState();
 
+
 }
 
 
 
 
-class _DashboardScreenState extends State<DashboardScreen>{
 
-  List<dynamic> recentAnalyses = [];
+class _DashboardScreenState
+extends State<DashboardScreen>{
 
-bool historyLoading = true;
+
+
+String t(BuildContext context,String key){
+
+
+final language =
+
+Provider.of<LanguageService>(context)
+.language;
+
+
+
+return AppLocalizations.translate(
+key,
+language
+);
+
+
+}
+
+
+
 
 
 
 String temperature = "--";
 
-String weatherCondition = "Loading...";
 
-String humidity = "--";
+String weatherCondition =
+"Loading...";
 
 
+String humidity =
+"--";
 
-String selectedCrop = "Not analyzed";
-
-String recommendedCrop = "Not analyzed";
-
-String fertilizer = "Not analyzed";
-
-String cropHealth = "Not analyzed";
-
-String irrigation = "Not analyzed";
-
-double yieldPrediction = 0;
 
 
 
@@ -63,13 +81,12 @@ double yieldPrediction = 0;
 @override
 void initState(){
 
+
 super.initState();
 
-loadLatestAnalysis();
 
 loadWeather();
 
-loadRecentAnalyses();
 
 }
 
@@ -81,94 +98,6 @@ loadRecentAnalyses();
 
 Future<void> loadWeather() async {
 
-  try {
-
-    final data = await WeatherService.getWeather();
-
-    final current = data["current"];
-
-    setState(() {
-
-      temperature =
-          "${current["temperature_2m"]}°C";
-
-      humidity =
-          "${current["relative_humidity_2m"]}%";
-
-      weatherCondition =
-          getWeatherName(
-            current["weather_code"],
-          );
-
-    });
-
-  } catch (e) {
-
-    print(e);
-
-    setState(() {
-
-      temperature = "--";
-
-      humidity = "--";
-
-      weatherCondition = "Unavailable";
-
-    });
-
-  }
-
-}
-
-String getWeatherName(int code) {
-
-  switch (code) {
-
-    case 0:
-      return "Clear Sky";
-
-    case 1:
-    case 2:
-    case 3:
-      return "Partly Cloudy";
-
-    case 45:
-    case 48:
-      return "Fog";
-
-    case 51:
-    case 53:
-    case 55:
-      return "Drizzle";
-
-    case 61:
-    case 63:
-    case 65:
-      return "Rain";
-
-    case 71:
-    case 73:
-    case 75:
-      return "Snow";
-
-    case 95:
-      return "Thunderstorm";
-
-    default:
-      return "Cloudy";
-
-  }
-
-}
-
-
-
-
-
-
-
-
-Future<void> loadLatestAnalysis() async {
 
 
 try{
@@ -176,52 +105,40 @@ try{
 
 final data =
 
-await ApiService.getLatestAnalysis(
+await WeatherService.getWeather();
 
-UserSession.userId!
 
-);
+
+final current =
+
+data["current"];
+
+
 
 
 
 setState((){
 
 
-selectedCrop =
-data["selected_crop"] ??
-"Not selected";
+temperature =
+
+"${current["temperature_2m"]}°C";
 
 
 
-recommendedCrop =
-data["recommended_crop"] ??
-"Not analyzed";
+humidity =
+
+"${current["relative_humidity_2m"]}%";
 
 
 
-fertilizer =
-data["fertilizer"] ??
-"Not analyzed";
+weatherCondition =
 
+getWeatherName(
 
-
-yieldPrediction =
-
-double.parse(
-
-data["yield_prediction"].toString()
+current["weather_code"],
 
 );
-
-
-
-cropHealth =
-"Healthy";
-
-
-
-irrigation =
-"Recommended";
 
 
 
@@ -234,54 +151,15 @@ irrigation =
 catch(e){
 
 
-print(
-"Analysis error: $e"
-);
-
-
-}
-
-
-
-}
-
-
-
-Future<void> loadRecentAnalyses() async {
-
-
-try{
-
-
-final data =
-await ApiService.getHistory(
-UserSession.userId!
-);
-
-
-
 setState((){
 
-recentAnalyses = data;
 
-historyLoading = false;
+temperature="--";
 
-});
+humidity="--";
 
+weatherCondition="unavailable";
 
-}
-
-catch(e){
-
-
-print(
-"History loading error: $e"
-);
-
-
-setState((){
-
-historyLoading=false;
 
 });
 
@@ -289,196 +167,93 @@ historyLoading=false;
 }
 
 
+
 }
+
+
+
+
+
+
+
+String getWeatherName(int code){
+
+
+
+switch(code){
+
+
+case 0:
+
+return "Clear Sky";
+
+
+
+case 1:
+
+case 2:
+
+case 3:
+
+return "Partly Cloudy";
+
+
+
+case 45:
+
+case 48:
+
+return "Fog";
+
+
+
+case 51:
+
+case 53:
+
+case 55:
+
+return "Drizzle";
+
+
+
+case 61:
+
+case 63:
+
+case 65:
+
+return "Rain";
+
+
+
+case 95:
+
+return "Thunderstorm";
+
+
+
+default:
+
+return "Cloudy";
+
+
+}
+
+
+
+}
+
+
+
+
+
 
 
 Future<void> refreshDashboard() async {
 
-  await loadLatestAnalysis();
 
-  setState((){});
-
-}
-
-
-
-
-
-
-
-Widget buildCard({
-
-required IconData icon,
-
-required String title,
-
-required String value,
-
-required Color color,
-
-
-}){
-
-
-return Card(
-
-
-elevation:4,
-
-
-margin:
-
-const EdgeInsets.only(
-
-bottom:15
-
-),
-
-
-
-shape:
-
-RoundedRectangleBorder(
-
-borderRadius:
-
-BorderRadius.circular(18)
-
-),
-
-
-
-child:
-
-Padding(
-
-padding:
-
-const EdgeInsets.all(16),
-
-
-
-child:
-
-Row(
-
-children:[
-
-
-
-Container(
-
-padding:
-
-const EdgeInsets.all(12),
-
-
-
-decoration:
-
-BoxDecoration(
-
-color:
-
-color.withOpacity(0.15),
-
-
-borderRadius:
-
-BorderRadius.circular(15),
-
-),
-
-
-
-child:
-
-Icon(
-
-icon,
-
-color:color,
-
-size:30,
-
-),
-
-),
-
-
-
-const SizedBox(width:20),
-
-
-
-
-Column(
-
-crossAxisAlignment:
-
-CrossAxisAlignment.start,
-
-
-children:[
-
-
-Text(
-
-title,
-
-style:
-
-const TextStyle(
-
-fontWeight:
-
-FontWeight.bold,
-
-fontSize:16,
-
-),
-
-),
-
-
-
-const SizedBox(height:5),
-
-
-
-Text(
-
-value,
-
-style:
-
-TextStyle(
-
-color:
-
-Colors.grey[700],
-
-),
-
-),
-
-
-],
-
-
-),
-
-
-],
-
-
-),
-
-
-),
-
-
-);
+await loadWeather();
 
 
 }
@@ -492,7 +267,9 @@ Colors.grey[700],
 @override
 Widget build(BuildContext context){
 
-
+final language =
+Provider.of<LanguageService>(context)
+.language;
 
 return Scaffold(
 
@@ -503,15 +280,22 @@ appBar:
 AppBar(
 
 
+
 title:
 
-const Text(
-"Farmer Dashboard"
+Text(
+
+t(context,"dashboard"),
+
 ),
 
 
 
+
+
 actions:[
+
+
 
 
 IconButton(
@@ -526,9 +310,11 @@ Icons.settings
 onPressed:(){
 
 
+
 Navigator.push(
 
 context,
+
 
 MaterialPageRoute(
 
@@ -538,12 +324,19 @@ const SettingsScreen(),
 
 ),
 
+
 );
+
 
 
 },
 
-),  
+
+),
+
+
+
+
 
 
 IconButton(
@@ -557,9 +350,12 @@ Icons.notifications
 
 onPressed:(){
 
+
+
 Navigator.push(
 
 context,
+
 
 MaterialPageRoute(
 
@@ -569,11 +365,19 @@ const NotificationScreen(),
 
 ),
 
+
 );
+
+
 
 },
 
+
 ),
+
+
+
+
 
 
 
@@ -588,9 +392,12 @@ Icons.person
 
 onPressed:(){
 
+
+
 Navigator.push(
 
 context,
+
 
 MaterialPageRoute(
 
@@ -600,11 +407,18 @@ const ProfileScreen(),
 
 ),
 
+
 );
+
+
 
 },
 
+
 ),
+
+
+
 
 
 ],
@@ -618,7 +432,10 @@ const ProfileScreen(),
 
 
 
+
 body:
+
+
 
 SingleChildScrollView(
 
@@ -630,7 +447,10 @@ const EdgeInsets.all(20),
 
 
 
+
 child:
+
+
 
 Column(
 
@@ -654,9 +474,12 @@ width:
 
 double.infinity,
 
+
+
 padding:
 
 const EdgeInsets.all(20),
+
 
 
 
@@ -680,6 +503,7 @@ Colors.lightGreen,
 ),
 
 
+
 borderRadius:
 
 BorderRadius.circular(20),
@@ -688,9 +512,12 @@ BorderRadius.circular(20),
 
 
 
+
 child:
 
 Column(
+
+
 
 crossAxisAlignment:
 
@@ -704,23 +531,37 @@ children:[
 
 Text(
 
-"Welcome ${UserSession.userName ?? "Farmer"} 🌾",
+
+"${t(context,"welcome")} ${UserSession.userName ?? t(context,"farmer")}",
+
+
 
 style:
 
 const TextStyle(
 
-color:Colors.white,
 
-fontSize:24,
+color:
+
+Colors.white,
+
+
+fontSize:
+
+24,
+
 
 fontWeight:
 
 FontWeight.bold,
 
-),
 
 ),
+
+
+),
+
+
 
 
 
@@ -729,21 +570,26 @@ const SizedBox(height:10),
 
 
 
-const Text(
+Text(
 
-"Monitor your crops with AI",
+t(context,"monitor"),
 
 style:
 
-TextStyle(
+const TextStyle(
 
-color:Colors.white,
+color:
 
-fontSize:16,
+Colors.white,
+
+fontSize:
+
+16,
 
 ),
 
 ),
+
 
 
 
@@ -754,368 +600,353 @@ fontSize:16,
 ),
 
 
-
 ),
 
-
-
-
-
-const SizedBox(height:25),
-
-
-
-
-
-
-
-Card(
-
-elevation:4,
-
-
-child:
-
-ListTile(
-
-
-leading:
-
-const CircleAvatar(
-
-backgroundColor:Colors.blue,
-
-child:
-
-Icon(
-
-Icons.cloud,
-
-color:Colors.white,
-
-),
-
-),
-
-
-
-title:
-
-const Text(
-
-"Weather",
-
-style:
-
-TextStyle(
-
-fontWeight:
-
-FontWeight.bold,
-
-),
-
-),
-
-
-
-subtitle: Text(
-
-  "$temperature | $weatherCondition\nHumidity: $humidity",
-
-),
-
-
-
-),
-
-
-),
-
-
-const SizedBox(height:15),
-
-AnalysisSummaryCard(
-
-  crop:selectedCrop,
-
-  recommendedCrop:recommendedCrop,
-
-  fertilizer:fertilizer,
-
-  yieldValue:
-  yieldPrediction.toString(),
-
-),
 
 
 
 const SizedBox(height:20),
+            SizedBox(
 
+              width:
 
+              double.infinity,
 
-buildCard(
 
-icon:Icons.grass,
 
-title:"Selected Crop",
+              child:
 
-value:selectedCrop,
+              ElevatedButton.icon(
 
-color:Colors.green,
 
-),
 
+                icon:
 
+                const Icon(
 
+                  Icons.analytics,
 
-buildCard(
+                ),
 
-icon:Icons.auto_awesome,
 
-title:"AI Recommended Crop",
 
-value:recommendedCrop,
 
-color:Colors.teal,
+                label:
 
-),
+                Text(
 
+                  t(context,"analyze"),
 
+                  style:
 
+                  const TextStyle(
 
-buildCard(
+                    fontSize:18,
 
-icon:Icons.eco,
+                    fontWeight:
 
-title:"Crop Health",
+                    FontWeight.bold,
 
-value:cropHealth,
+                  ),
 
-color:Colors.green,
+                ),
 
-),
 
 
 
+                onPressed:() async {
 
 
-buildCard(
 
-icon:Icons.bar_chart,
+                  await Navigator.push(
 
-title:"Yield Prediction",
 
-value:"$yieldPrediction Tons/Hectare",
 
-color:Colors.blue,
+                    context,
 
-),
 
 
+                    MaterialPageRoute(
 
 
 
-buildCard(
+                      builder:(_)=>
 
-icon:Icons.grass,
+                      const CropHealthScreen(),
 
-title:"Fertilizer",
 
-value:fertilizer,
 
-color:Colors.orange,
+                    ),
 
-),
 
 
+                  );
 
 
 
-buildCard(
 
-icon:Icons.water_drop,
+                  await refreshDashboard();
 
-title:"Irrigation",
 
-value:irrigation,
 
-color:Colors.cyan,
+                },
 
-),
 
 
-RecentAnalysisCard(
+              ),
 
-  analyses: recentAnalyses,
 
-),
 
-const SizedBox(height:20),
+            ),
 
 
-Card(
 
-elevation:4,
 
 
-child:
+            const SizedBox(height:20),
 
-ListTile(
 
 
-leading:
 
-const CircleAvatar(
 
-child:
 
-Icon(Icons.history),
 
-),
+            Card(
 
 
 
-title:
+              elevation:4,
 
-const Text(
 
-"Previous Analysis"
 
-),
+              child:
 
+              ListTile(
 
 
-subtitle:
 
-const Text(
+                leading:
 
-"View your past AI recommendations"
+                const CircleAvatar(
 
-),
 
+                  backgroundColor:
 
+                  Colors.blue,
 
-trailing:
 
-const Icon(
+                  child:
 
-Icons.arrow_forward_ios,
+                  Icon(
 
-),
+                    Icons.cloud,
 
+                    color:
 
+                    Colors.white,
 
+                  ),
 
-onTap:(){
 
+                ),
 
 
-Navigator.push(
 
-context,
 
-MaterialPageRoute(
+                title:
 
-builder:(_)=>
+                Text(
 
-const HistoryScreen(),
+                  t(context,"weather"),
 
-),
+                  style:
 
-);
+                  const TextStyle(
 
+                    fontWeight:
 
-},
+                    FontWeight.bold,
 
+                  ),
 
+                ),
 
-),
 
 
-),
 
+                subtitle:
 
+                Text(
 
+                  "$temperature | ${
+WeatherTranslationService.translateWeather(weatherCondition,language)}\n"
+"${t(context,"humidity")}: $humidity",
+                ),
 
 
-const SizedBox(height:25),
 
+              ),
 
 
 
+            ),
 
-SizedBox(
 
-width:
 
-double.infinity,
 
 
-child:
 
-ElevatedButton(
 
+            const SizedBox(height:20),
 
-onPressed: () async {
 
-  await Navigator.push(
 
-    context,
 
-    MaterialPageRoute(
 
-      builder: (_) => const CropHealthScreen(),
 
-    ),
 
-  );
 
-  await refreshDashboard();
+            Card(
 
-},
 
 
+              elevation:4,
 
-child:
 
-const Text(
 
-"Analyze Crop 🌱",
+              child:
 
-style:
+              ListTile(
 
-TextStyle(
 
-fontSize:18,
 
-),
+                leading:
 
-),
+                const CircleAvatar(
 
 
 
-),
+                  child:
 
+                  Icon(
 
-),
+                    Icons.history,
 
+                  ),
 
 
-],
 
+                ),
 
-),
 
 
-),
 
+                title:
 
-);
+                Text(
 
+                  t(context,"history"),
 
+                ),
 
-}
+
+
+
+
+                subtitle:
+
+                Text(
+
+                  t(context,"view_past_recommendations"),
+
+                ),
+
+
+
+
+                trailing:
+
+                const Icon(
+
+                  Icons.arrow_forward_ios,
+
+                ),
+
+
+
+
+                onTap:(){
+
+
+
+                  Navigator.push(
+
+
+
+                    context,
+
+
+
+                    MaterialPageRoute(
+
+
+
+                      builder:(_)=>
+
+
+
+                      const HistoryScreen(),
+
+
+
+                    ),
+
+
+
+                  );
+
+
+
+                },
+
+
+
+              ),
+
+
+
+            ),
+
+
+
+
+
+
+
+            const SizedBox(height:25),
+
+
+
+
+
+          ],
+
+
+
+        ),
+
+
+
+      ),
+
+
+
+    );
+
+
+
+  }
+
 
 
 }

@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../services/analysis_session.dart';
 
+import '../../localization/app_localizations.dart';
+import '../../services/language_service.dart';
 
 class NotificationScreen extends StatelessWidget {
+  String t(BuildContext context,String key){
+
+  final language =
+  Provider.of<LanguageService>(context)
+      .language;
+
+
+  return AppLocalizations.translate(
+    key,
+    language,
+  );
+
+}
 
 
 const NotificationScreen({
@@ -28,10 +44,10 @@ if(AnalysisSession.fertilizer != "Not analyzed"){
 notifications.add({
 
 "title":
-"🌱 Fertilizer Recommendation",
+"fertilizer_notification",
 
 "message":
-"Apply ${AnalysisSession.fertilizer} for better growth",
+"apply_fertilizer",
 
 });
 
@@ -48,10 +64,10 @@ if(AnalysisSession.yieldPrediction < 3){
 notifications.add({
 
 "title":
-"⚠ Yield Alert",
+"yield_alert",
 
 "message":
-"Expected yield is low. Improve soil nutrients.",
+"low_yield",
 
 });
 
@@ -68,10 +84,10 @@ if(AnalysisSession.irrigation == "Recommended"){
 notifications.add({
 
 "title":
-"💧 Irrigation Reminder",
+"irrigation_reminder",
 
 "message":
-"Your crop may need water soon.",
+"water_reminder",
 
 });
 
@@ -89,8 +105,8 @@ appBar:
 AppBar(
 
 title:
-const Text(
-"Notifications"
+Text(
+t(context,"notifications")
 ),
 
 ),
@@ -104,13 +120,14 @@ notifications.isEmpty
 ?
 
 
-const Center(
+Center(
 
 child:
 
 Text(
 
-"No new notifications",
+t(context,"no_notifications"),
+
 
 style:
 
@@ -177,7 +194,8 @@ title:
 
 Text(
 
-item["title"]!,
+t(context,item["title"]!),
+
 
 style:
 
@@ -197,7 +215,8 @@ subtitle:
 
 Text(
 
-item["message"]!,
+t(context,item["message"]!),
+
 
 ),
 

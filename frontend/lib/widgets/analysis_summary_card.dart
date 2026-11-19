@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../localization/app_localizations.dart';
+import '../services/language_service.dart';
+
 
 
 class AnalysisSummaryCard extends StatelessWidget {
@@ -11,6 +16,7 @@ final String recommendedCrop;
 final String fertilizer;
 
 final String yieldValue;
+
 
 
 
@@ -31,8 +37,36 @@ required this.yieldValue,
 
 
 
+
+String t(BuildContext context,String key){
+
+
+final language =
+
+Provider.of<LanguageService>(context)
+.language;
+
+
+
+return AppLocalizations.translate(
+
+key,
+
+language,
+
+);
+
+
+
+}
+
+
+
+
+
 @override
 Widget build(BuildContext context){
+
 
 
 return Card(
@@ -40,11 +74,13 @@ return Card(
 elevation:5,
 
 
+
 shape:
 
 RoundedRectangleBorder(
 
 borderRadius:
+
 BorderRadius.circular(20),
 
 ),
@@ -56,6 +92,7 @@ child:
 Padding(
 
 padding:
+
 const EdgeInsets.all(20),
 
 
@@ -65,22 +102,29 @@ child:
 Column(
 
 crossAxisAlignment:
+
 CrossAxisAlignment.start,
+
+
 
 children:[
 
 
-const Text(
 
-"🌱 Latest AI Analysis",
+
+Text(
+
+"🌱 ${t(context,"latest_analysis")}",
+
 
 style:
 
-TextStyle(
+const TextStyle(
 
 fontSize:20,
 
 fontWeight:
+
 FontWeight.bold,
 
 ),
@@ -89,37 +133,66 @@ FontWeight.bold,
 
 
 
+
+
 const SizedBox(height:15),
 
 
 
-Text(
-"Selected Crop: $crop"
-),
+
 
 
 Text(
-"Recommended Crop: $recommendedCrop"
+
+"${t(context,"selected_crop")}: $crop"
+
 ),
+
+
+
 
 
 Text(
-"Fertilizer: $fertilizer"
+
+"${t(context,"recommended_crop")}: $recommendedCrop"
+
 ),
+
+
+
+
 
 
 Text(
-"Expected Yield: $yieldValue Tons/Ha"
+
+"${t(context,"fertilizer")}: $fertilizer"
+
 ),
+
+
+
+
+
+
+Text(
+
+"${t(context,"expected_yield")}: $yieldValue Tons/Ha"
+
+),
+
 
 
 
 ],
 
-),
 
 
 ),
+
+
+
+),
+
 
 
 );
@@ -127,5 +200,7 @@ Text(
 
 
 }
+
+
 
 }

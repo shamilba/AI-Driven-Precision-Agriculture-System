@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../services/api_service.dart';
 import '../../services/user_session.dart';
 
+import '../../localization/app_localizations.dart';
+import '../../services/language_service.dart';
+import '../../services/crop_translation_service.dart';
 
 class HistoryScreen extends StatefulWidget {
 
@@ -18,6 +22,20 @@ class HistoryScreen extends StatefulWidget {
 
 
 class _HistoryScreenState extends State<HistoryScreen>{
+
+  String t(BuildContext context,String key){
+
+  final language =
+  Provider.of<LanguageService>(context)
+      .language;
+
+
+  return AppLocalizations.translate(
+    key,
+    language,
+  );
+
+}
 
 
   List<dynamic> history = [];
@@ -96,7 +114,7 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
       });
 
-
+if(!mounted) return;
 
       ScaffoldMessenger.of(context)
       .showSnackBar(
@@ -136,9 +154,9 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
         title:
 
-        const Text(
-          "Previous Analysis"
-        ),
+Text(
+  t(context,"previous_analysis")
+),
 
       ),
 
@@ -177,25 +195,25 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
 
 
-      const Center(
+      Center(
 
-        child:
+  child:
 
-        Text(
+  Text(
 
-          "No previous analysis available",
+    t(context,"no_analysis"),
 
-          style:
+    style:
 
-          TextStyle(
+    const TextStyle(
 
-            fontSize:18,
+      fontSize:18,
 
-          ),
+    ),
 
-        ),
+  ),
 
-      )
+)
 
 
 
@@ -224,7 +242,9 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
           final item = history[index];
 
-
+final language =
+Provider.of<LanguageService>(context)
+    .language;
 
           return Card(
 
@@ -283,7 +303,10 @@ class _HistoryScreenState extends State<HistoryScreen>{
                   Text(
 
 
-                    "Crop: ${item["selected_crop"]}",
+                    "${t(context,"crop")}: ${CropTranslationService.translateCrop(
+  item["selected_crop"].toString(),
+  language
+)}",
 
 
 
@@ -315,7 +338,10 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
                   Text(
 
-                    "AI Suggested Crop: ${item["recommended_crop"]}",
+                    "${t(context,"ai_suggested_crop")}: ${CropTranslationService.translateCrop(
+  item["recommended_crop"].toString(),
+  language
+)}",
 
                   ),
 
@@ -324,7 +350,7 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
                   Text(
 
-                    "Fertilizer: ${item["fertilizer"]}",
+                    "${t(context,"fertilizer")}: ${item["fertilizer"]}",
 
                   ),
 
@@ -333,7 +359,7 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
                   Text(
 
-                    "Expected Yield: ${item["yield_prediction"]} Tons/Ha",
+                    "${t(context,"expected_yield")}: ${item["yield_prediction"]} Tons/Ha",
 
                   ),
 
@@ -342,7 +368,7 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
                   Text(
 
-                    "Temperature: ${item["temperature"]} °C",
+                    "${t(context,"temperature")}: ${item["temperature"]} °C",
 
                   ),
 
@@ -351,7 +377,7 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
                   Text(
 
-                    "Humidity: ${item["humidity"]} %",
+                    "${t(context,"humidity")}: ${item["humidity"]} %",
 
                   ),
 
@@ -360,7 +386,7 @@ class _HistoryScreenState extends State<HistoryScreen>{
 
                   Text(
 
-                    "Rainfall: ${item["rainfall"]} mm",
+                    "${t(context,"rainfall")}: ${item["rainfall"]} mm",
 
                   ),
 

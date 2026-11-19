@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../services/user_session.dart';
+import '../../services/language_service.dart';
+import '../../localization/app_localizations.dart';
+
 import '../auth/login_screen.dart';
 
 
-
 class ProfileScreen extends StatelessWidget {
+String t(BuildContext context,String key){
 
+  final language =
+  Provider.of<LanguageService>(context)
+      .language;
+
+
+  return AppLocalizations.translate(
+    key,
+    language,
+  );
+
+}
 
 const ProfileScreen({
 super.key,
@@ -24,8 +39,8 @@ return Scaffold(
 appBar: AppBar(
 
 title:
-const Text(
-"Farmer Profile"
+Text(
+t(context,"farmer_profile")
 ),
 
 ),
@@ -88,8 +103,8 @@ Icons.person
 
 title:
 
-const Text(
-"Name"
+Text(
+t(context,"name")
 ),
 
 
@@ -122,8 +137,8 @@ Icons.email
 
 title:
 
-const Text(
-"Email"
+Text(
+t(context,"email")
 ),
 
 
@@ -174,8 +189,8 @@ Icons.logout
 
 label:
 
-const Text(
-"Logout"
+Text(
+t(context,"logout")
 ),
 
 

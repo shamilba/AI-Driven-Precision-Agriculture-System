@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'screens/auth/login_screen.dart';
-import 'screens/home/home_screen.dart';
 import 'screens/splash/splash_screen.dart';
 import 'services/theme_service.dart';
-
+import 'services/language_service.dart';
 
 
 void main(){
 
 
 runApp(
+
+
+MultiProvider(
+
+
+providers:[
+
 
 
 ChangeNotifierProvider(
@@ -22,13 +26,39 @@ create:(_)=>
 ThemeService(),
 
 
+),
+
+
+
+
+ChangeNotifierProvider(
+
+create:(_){
+
+final service = LanguageService();
+
+service.loadLanguage();
+
+return service;
+
+},
+
+),
+
+
+
+],
+
+
 
 child:
 
 const AgricultureApp(),
 
 
+
 ),
+
 
 
 );

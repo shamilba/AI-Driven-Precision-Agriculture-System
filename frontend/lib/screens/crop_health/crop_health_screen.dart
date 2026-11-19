@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../analysis/analysis_loading_screen.dart';
+
+import '../../localization/app_localizations.dart';
+import '../../services/language_service.dart';
+
 
 
 class CropHealthScreen extends StatefulWidget {
 
-  const CropHealthScreen({super.key});
+
+  const CropHealthScreen({
+    super.key,
+  });
+
 
 
   @override
@@ -16,62 +25,107 @@ class CropHealthScreen extends StatefulWidget {
 
 
 
-class _CropHealthScreenState extends State<CropHealthScreen>{
+
+class _CropHealthScreenState
+extends State<CropHealthScreen>{
+
+
+
+String t(BuildContext context,String key){
+
+
+final language =
+
+Provider.of<LanguageService>(context)
+.language;
+
+
+
+return AppLocalizations.translate(
+key,
+language,
+);
+
+
+}
+
+
+
+
+
 
 
 final formKey = GlobalKey<FormState>();
 
 
-String selectedCrop = "Rice";
 
-String selectedSoil = "Loamy";
+ String selectedCrop = "rice";
+
+String selectedSoil = "loamy";
+
+
 
 
 
 final crops = [
 
-  "Rice",
-  "Wheat",
-  "Maize",
-  "Tomato",
-  "Potato"
+  "rice",
+  "wheat",
+  "maize",
+  "tomato",
+  "potato"
 
 ];
 
 
 final soils = [
 
-  "Loamy",
-  "Clay",
-  "Sandy",
-  "Black"
+  "loamy",
+  "clay",
+  "sandy",
+  "black"
 
 ];
 
 
 
-// Controllers
 
-final nController = TextEditingController();
 
-final pController = TextEditingController();
+final nController =
+TextEditingController();
 
-final kController = TextEditingController();
+
+final pController =
+TextEditingController();
+
+
+final kController =
+TextEditingController();
+
 
 final temperatureController =
 TextEditingController();
 
+
 final humidityController =
 TextEditingController();
+
 
 final phController =
 TextEditingController();
 
+
 final rainfallController =
 TextEditingController();
 
+
 final moistureController =
 TextEditingController();
+
+
+
+
+
 
 
 
@@ -81,65 +135,130 @@ TextEditingController();
 Widget build(BuildContext context){
 
 
+
 return Scaffold(
 
 
-appBar: AppBar(
 
-backgroundColor: Colors.green,
 
-title: const Text(
+appBar:
 
-"Crop Analysis",
+AppBar(
 
-style: TextStyle(
-fontWeight: FontWeight.bold,
+
+backgroundColor:
+Colors.green,
+
+
+
+title:
+
+Text(
+
+
+t(context,"crop_analysis"),
+
+
+
+style:
+
+const TextStyle(
+
+fontWeight:
+FontWeight.bold,
+
 ),
 
+
+
 ),
 
+
+
 ),
 
 
 
-body: Padding(
+
+
+
+
+body:
+
+Padding(
+
 
 padding:
+
 const EdgeInsets.all(16),
 
 
 
-child: Form(
-
-key: formKey,
 
 
-child: SingleChildScrollView(
+child:
+
+Form(
 
 
-child: Column(
+key:formKey,
+
+
+
+child:
+
+SingleChildScrollView(
+
+
+
+child:
+
+Column(
+
+
 
 crossAxisAlignment:
+
 CrossAxisAlignment.start,
 
 
-children: [
+
+
+children:[
 
 
 
-const Text(
 
-"Analyze Your Crop 🌱",
 
-style: TextStyle(
+
+
+Text(
+
+
+t(context,"analyze_crop_title"),
+
+
+
+style:
+
+const TextStyle(
+
 
 fontSize:26,
 
-fontWeight: FontWeight.bold,
+
+fontWeight:
+FontWeight.bold,
+
 
 ),
 
+
+
 ),
+
+
+
 
 
 
@@ -147,21 +266,39 @@ const SizedBox(height:8),
 
 
 
-const Text(
 
-"Enter farm details to get AI based recommendations",
 
-style: TextStyle(
 
-color: Colors.grey,
+Text(
+
+
+t(context,"farm_details"),
+
+
+
+style:
+
+const TextStyle(
+
+color:Colors.grey,
 
 ),
 
+
+
 ),
+
+
+
 
 
 
 const SizedBox(height:20),
+
+
+
+
+
 
 
 
@@ -172,26 +309,55 @@ const SizedBox(height:20),
 // ===========================
 
 
+
 buildSectionCard(
 
-title:"Crop Information",
 
-icon:Icons.agriculture,
+
+title:
+
+t(context,"crop_information"),
+
+
+
+icon:
+
+Icons.agriculture,
+
 
 
 children:[
 
 
+
+
+
 DropdownButtonFormField<String>(
 
-value:selectedCrop,
+
+
+initialValue: selectedCrop,
+
+
+
 
 
 decoration:
+
 inputDecoration(
-"Select Crop",
+
+
+t(context,"select_crop"),
+
+
 Icons.grass,
+
+
 ),
+
+
+
+
 
 
 items:crops.map((crop){
@@ -201,7 +367,9 @@ return DropdownMenuItem(
 
 value:crop,
 
-child:Text(crop),
+child:Text(
+  t(context,crop),
+),
 
 );
 
@@ -210,18 +378,32 @@ child:Text(crop),
 
 
 
+
+
 onChanged:(value){
+
+
 
 setState((){
 
+
 selectedCrop=value!;
 
+
+
 });
+
+
 
 },
 
 
+
+
 ),
+
+
+
 
 
 
@@ -229,16 +411,39 @@ const SizedBox(height:15),
 
 
 
+
+
+
+
 DropdownButtonFormField<String>(
 
-value:selectedSoil,
+
+
+initialValue: selectedSoil,
+
+
+
 
 
 decoration:
+
 inputDecoration(
-"Soil Type",
+
+
+
+t(context,"soil_type"),
+
+
+
 Icons.landscape,
+
+
+
 ),
+
+
+
+
 
 
 items:soils.map((soil){
@@ -248,7 +453,9 @@ return DropdownMenuItem(
 
 value:soil,
 
-child:Text(soil),
+child:Text(
+  t(context,soil),
+),
 
 );
 
@@ -257,24 +464,41 @@ child:Text(soil),
 
 
 
+
+
 onChanged:(value){
+
+
 
 setState((){
 
+
 selectedSoil=value!;
 
+
+
 });
+
+
 
 },
 
 
+
 ),
+
+
 
 
 ],
 
 
+
 ),
+
+
+
+
 
 
 
@@ -285,31 +509,67 @@ selectedSoil=value!;
 // ===========================
 
 
+
 buildSectionCard(
 
-title:"Soil Nutrients 🧪",
 
-icon:Icons.science,
+
+title:
+
+t(context,"soil_nutrients"),
+
+
+
+icon:
+
+Icons.science,
+
 
 
 children:[
 
 
+
+
+
 buildField(
 
-controller:nController,
 
-label:"Nitrogen (N)",
 
-icon:Icons.science,
+controller:
 
-hint:"Recommended: 0 - 140 kg/ha",
+nController,
+
+
+
+label:
+
+t(context,"nitrogen"),
+
+
+
+icon:
+
+Icons.science,
+
+
+
+hint:
+
+"Recommended: 0 - 140 kg/ha",
+
+
 
 min:0,
 
+
 max:140,
 
+
+
 ),
+
+
 
 
 
@@ -317,21 +577,48 @@ const SizedBox(height:15),
 
 
 
+
+
+
 buildField(
 
-controller:pController,
 
-label:"Phosphorus (P)",
 
-icon:Icons.science,
+controller:
 
-hint:"Recommended: 5 - 145 kg/ha",
+pController,
+
+
+
+label:
+
+t(context,"phosphorus"),
+
+
+
+icon:
+
+Icons.science,
+
+
+
+hint:
+
+"Recommended: 5 - 145 kg/ha",
+
+
 
 min:5,
+
 
 max:145,
 
+
+
 ),
+
+
+
 
 
 
@@ -339,32 +626,55 @@ const SizedBox(height:15),
 
 
 
+
+
+
+
 buildField(
 
-controller:kController,
 
-label:"Potassium (K)",
 
-icon:Icons.science,
+controller:
 
-hint:"Recommended: 5 - 205 kg/ha",
+kController,
+
+
+
+label:
+
+t(context,"potassium"),
+
+
+
+icon:
+
+Icons.science,
+
+
+
+hint:
+
+"Recommended: 5 - 205 kg/ha",
+
+
 
 min:5,
 
+
 max:205,
 
+
+
 ),
+
+
 
 
 ],
 
+
+
 ),
-
-
-
-
-
-
 // ===========================
 // ENVIRONMENT
 // ===========================
@@ -372,29 +682,64 @@ max:205,
 
 buildSectionCard(
 
-title:"Environmental Conditions 🌦",
 
-icon:Icons.cloud,
+
+title:
+
+t(context,"environment"),
+
+
+
+icon:
+
+Icons.cloud,
+
 
 
 children:[
 
 
+
+
+
 buildField(
 
-controller:temperatureController,
 
-label:"Temperature",
 
-icon:Icons.thermostat,
+controller:
 
-hint:"Recommended: 15 - 40 °C",
+temperatureController,
+
+
+
+label:
+
+t(context,"temperature"),
+
+
+
+icon:
+
+Icons.thermostat,
+
+
+
+hint:
+
+"Recommended: 15 - 40 °C",
+
+
 
 min:15,
 
+
 max:40,
 
+
+
 ),
+
+
 
 
 
@@ -402,21 +747,47 @@ const SizedBox(height:15),
 
 
 
+
+
 buildField(
 
-controller:humidityController,
 
-label:"Humidity",
 
-icon:Icons.water_drop,
+controller:
 
-hint:"Recommended: 20 - 100 %",
+humidityController,
+
+
+
+label:
+
+t(context,"humidity"),
+
+
+
+icon:
+
+Icons.water_drop,
+
+
+
+hint:
+
+"Recommended: 20 - 100 %",
+
+
 
 min:20,
+
 
 max:100,
 
+
+
 ),
+
+
+
 
 
 
@@ -424,27 +795,57 @@ const SizedBox(height:15),
 
 
 
+
+
+
 buildField(
 
-controller:rainfallController,
 
-label:"Rainfall",
 
-icon:Icons.cloud,
+controller:
 
-hint:"Recommended: 20 - 300 mm",
+rainfallController,
+
+
+
+label:
+
+t(context,"rainfall"),
+
+
+
+icon:
+
+Icons.cloud,
+
+
+
+hint:
+
+"Recommended: 20 - 300 mm",
+
+
 
 min:20,
 
+
 max:300,
 
+
+
 ),
+
+
 
 
 ],
 
 
+
 ),
+
+
+
 
 
 
@@ -456,31 +857,68 @@ max:300,
 // ===========================
 
 
+
 buildSectionCard(
 
-title:"Soil Condition 💧",
 
-icon:Icons.water,
+
+title:
+
+t(context,"soil_condition"),
+
+
+
+icon:
+
+Icons.water,
+
 
 
 children:[
 
 
+
+
+
 buildField(
 
-controller:phController,
 
-label:"Soil pH",
 
-icon:Icons.landscape,
+controller:
 
-hint:"Recommended: 3.5 - 9.5",
+phController,
+
+
+
+label:
+
+t(context,"soil_ph"),
+
+
+
+icon:
+
+Icons.landscape,
+
+
+
+hint:
+
+"Recommended: 3.5 - 9.5",
+
+
 
 min:3.5,
 
+
 max:9.5,
 
+
+
 ),
+
+
+
 
 
 
@@ -488,27 +926,55 @@ const SizedBox(height:15),
 
 
 
+
+
+
 buildField(
 
-controller:moistureController,
 
-label:"Soil Moisture",
 
-icon:Icons.water,
+controller:
 
-hint:"Recommended: 10 - 80 %",
+moistureController,
+
+
+
+label:
+
+t(context,"soil_moisture"),
+
+
+
+icon:
+
+Icons.water,
+
+
+
+hint:
+
+"Recommended: 10 - 80 %",
+
+
 
 min:10,
 
+
 max:80,
 
+
+
 ),
+
+
 
 
 ],
 
 
+
 ),
+
 
 
 
@@ -519,77 +985,153 @@ const SizedBox(height:10),
 
 
 
+
+
+
+
 SizedBox(
 
-width:double.infinity,
 
 
-child:ElevatedButton(
+width:
+
+double.infinity,
+
+
+
+
+child:
+
+ElevatedButton(
+
 
 
 style:
+
 ElevatedButton.styleFrom(
 
+
+
 backgroundColor:
+
 Colors.green,
 
 
+
 padding:
+
 const EdgeInsets.symmetric(
+
 vertical:15,
+
 ),
+
+
 
 
 shape:
+
 RoundedRectangleBorder(
 
+
+
 borderRadius:
+
 BorderRadius.circular(15),
 
+
+
 ),
 
+
+
 ),
 
 
 
-onPressed:analyzeCrop,
 
 
-child:const Text(
 
-"Analyze Crop 🌱",
+onPressed:
 
-style:TextStyle(
+analyzeCrop,
+
+
+
+
+
+child:
+
+Text(
+
+
+
+t(context,"analyze"),
+
+
+
+style:
+
+const TextStyle(
+
+
 
 fontSize:18,
 
+
+
 color:Colors.white,
 
-fontWeight:FontWeight.bold,
+
+
+fontWeight:
+
+FontWeight.bold,
+
+
 
 ),
 
+
+
 ),
 
 
 
 ),
 
+
+
 ),
+
+
+
 
 
 
 ],
 
-),
+
 
 ),
 
-),
+
 
 ),
+
+
+
+),
+
+
+
+),
+
+
 
 );
+
+
 
 }
 
@@ -599,7 +1141,11 @@ fontWeight:FontWeight.bold,
 
 
 
+
+
 Widget buildSectionCard({
+
+
 
 required String title,
 
@@ -607,48 +1153,88 @@ required IconData icon,
 
 required List<Widget> children,
 
+
+
 }){
+
 
 
 return Card(
 
+
+
 elevation:4,
 
+
+
 margin:
+
 const EdgeInsets.only(
+
 bottom:20,
+
 ),
+
+
+
 
 
 shape:
+
 RoundedRectangleBorder(
 
+
+
 borderRadius:
+
 BorderRadius.circular(20),
+
+
 
 ),
 
 
-child:Padding(
+
+
+
+child:
+
+Padding(
+
+
 
 padding:
+
 const EdgeInsets.all(16),
 
 
-child:Column(
+
+
+
+child:
+
+Column(
+
 
 
 crossAxisAlignment:
+
 CrossAxisAlignment.start,
 
 
+
 children:[
+
+
 
 
 
 Row(
 
+
+
 children:[
+
 
 
 Icon(
@@ -660,30 +1246,54 @@ color:Colors.green,
 ),
 
 
+
+
 const SizedBox(width:10),
+
+
 
 
 
 Text(
 
+
+
 title,
 
+
+
 style:
+
 const TextStyle(
+
+
 
 fontSize:20,
 
+
+
 fontWeight:
+
 FontWeight.bold,
 
-),
+
 
 ),
+
+
+
+),
+
+
 
 
 ],
 
+
+
 ),
+
+
 
 
 
@@ -691,19 +1301,28 @@ const SizedBox(height:15),
 
 
 
+
+
 ...children,
+
+
+
 
 
 ],
 
 
+
 ),
 
 
+
 ),
+
 
 
 );
+
 
 
 }
@@ -715,7 +1334,10 @@ const SizedBox(height:15),
 
 
 
+
 Widget buildField({
+
+
 
 required TextEditingController controller,
 
@@ -729,82 +1351,143 @@ double? min,
 
 double? max,
 
+
+
 }){
+
 
 
 return TextFormField(
 
 
-controller:controller,
+
+controller:
+
+controller,
+
 
 
 keyboardType:
+
 TextInputType.number,
+
+
+
 
 
 validator:(value){
 
 
+
 if(value==null || value.isEmpty){
 
-return "Required field";
+
+
+return t(context,"required");
+
+
 
 }
 
 
 
+
 double number =
+
 double.tryParse(value) ?? -1;
+
+
+
 
 
 
 if(min!=null && max!=null){
 
 
+
 if(number < min || number > max){
+
+
 
 return "Enter value between $min - $max";
 
-}
+
 
 }
+
+
+
+}
+
 
 
 return null;
 
 
+
 },
 
 
+
+
+
 decoration:
+
+
+
 InputDecoration(
 
 
-labelText:label,
 
-helperText:hint,
+labelText:
+
+label,
+
+
+
+helperText:
+
+hint,
+
 
 
 prefixIcon:
+
 Icon(icon),
 
 
+
+
 border:
+
 OutlineInputBorder(
 
+
+
 borderRadius:
+
 BorderRadius.circular(15),
 
-),
 
 
 ),
+
+
+
+),
+
 
 
 );
 
 
+
 }
+
+
+
+
+
 
 
 
@@ -813,31 +1496,58 @@ BorderRadius.circular(15),
 
 InputDecoration inputDecoration(
 
+
+
 String label,
 
 IconData icon
 
+
+
 ){
+
+
 
 return InputDecoration(
 
-labelText:label,
+
+
+labelText:
+
+label,
+
+
 
 prefixIcon:
+
 Icon(icon),
 
 
+
+
 border:
+
 OutlineInputBorder(
 
+
+
 borderRadius:
+
 BorderRadius.circular(15),
+
+
 
 ),
 
+
+
 );
 
+
+
 }
+
+
 
 
 
@@ -848,76 +1558,171 @@ BorderRadius.circular(15),
 Future<void> analyzeCrop() async {
 
 
+
 if(!formKey.currentState!.validate()){
+
+
 
 return;
 
+
+
 }
+
+
+
 
 
 
 Navigator.push(
 
+
+
 context,
 
+
+
 MaterialPageRoute(
+
+
 
 builder:(_)=>AnalysisLoadingScreen(
 
 
-crop:selectedCrop,
+
+crop:
+
+selectedCrop,
 
 
-n:double.parse(
+
+
+n:
+
+double.parse(
+
 nController.text
+
 ),
 
-p:double.parse(
+
+
+
+
+p:
+
+double.parse(
+
 pController.text
+
 ),
 
-k:double.parse(
+
+
+
+
+k:
+
+double.parse(
+
 kController.text
+
 ),
 
 
-temperature:double.parse(
+
+
+
+
+temperature:
+
+double.parse(
+
 temperatureController.text
+
 ),
 
 
-humidity:double.parse(
+
+
+
+
+humidity:
+
+double.parse(
+
 humidityController.text
+
 ),
 
 
-ph:double.parse(
+
+
+
+
+ph:
+
+double.parse(
+
 phController.text
+
 ),
 
 
-rainfall:double.parse(
+
+
+
+
+rainfall:
+
+double.parse(
+
 rainfallController.text
+
 ),
 
 
-soilType:selectedSoil,
 
 
-soilMoisture:double.parse(
+
+
+soilType:
+
+selectedSoil,
+
+
+
+
+
+
+soilMoisture:
+
+double.parse(
+
 moistureController.text
-),
-
 
 ),
 
 
+
+
+
 ),
+
+
+
+),
+
+
 
 );
 
 
+
 }
+
+
+
 
 
 

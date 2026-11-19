@@ -6,7 +6,7 @@ class ApiService {
 
 
   static const String baseUrl =
-      "http://localhost:5000";
+      "https://ai-driven-precision-agriculture-system.onrender.com";
 
 static Future<void> saveAnalysisHistory({
 

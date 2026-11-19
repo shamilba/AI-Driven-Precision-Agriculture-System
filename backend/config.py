@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 CROP_RECOMMENDATION_CSV = os.path.join(DATA_DIR, "crop_recommendation.csv")
 CROP_YIELD_CSV = os.path.join(DATA_DIR, "crop_yield.csv")
-FERTILIZER_CSV = os.path.join(DATA_DIR, "fertilizer_recommendation.csv")
+FERTILIZER_CSV = os.path.join(DATA_DIR, "fertilizer_recommendation_new.csv")
 
 # ---- Saved models ----
 MODEL_DIR = os.path.join(BASE_DIR, "saved_models")
@@ -29,7 +29,7 @@ FERTILIZER_LABEL_ENCODER_PATH = os.path.join(MODEL_DIR, "fertilizer_label_encode
 # ---- Server ----
 HOST = os.environ.get("BACKEND_HOST", "0.0.0.0")
 PORT = int(os.environ.get("BACKEND_PORT", 5000))
-DEBUG = os.environ.get("BACKEND_DEBUG", "true").lower() == "true"
+DEBUG = os.environ.get("BACKEND_DEBUG", "false").lower() == "true"
 
 # ---- Reproducibility ----
 RANDOM_STATE = 42
